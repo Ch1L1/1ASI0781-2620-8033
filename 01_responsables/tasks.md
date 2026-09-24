@@ -1,0 +1,6 @@
+- Registrar responsable (Código, DNI, Nombres, Apellidos, Teléfono, Parentesco).
+- Listar responsables.
+- Buscar un responsable por DNI.
+- Modificar el teléfono de un responsable.
+- Consultar qué pacientes están asociados a un responsable específico.
+- Validation Rule: No permitir registrar dos responsables con el mismo DNI ni campos vacíos.

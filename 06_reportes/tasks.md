@@ -1,0 +1,4 @@
+- Generar listados generales de pacientes y médicos.
+- Calcular pacientes atendidos por médico, historial de consultas de un paciente, cantidad total de consultas y consultas por médico.
+- Calcular ingresos totales, promedio de costo de consultas, paciente con mayor cantidad de consultas y distribución de pacientes por rangos de edad (0 a 2, 3 a 5, 6 a 11, 12 a 17 años).
+- Programar los 2 reportes adicionales requeridos por el caso.

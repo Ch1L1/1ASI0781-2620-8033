@@ -1,0 +1,6 @@
+- Registrar un paciente (Código, DNI, Nombres, Apellidos, Fecha de nacimiento, Sexo, Código del responsable).
+- Listar pacientes.
+- Buscar un paciente por DNI o por nombre/apellido.
+- Calcular la edad exacta del paciente.
+- Mostrar los datos completos del responsable asociado.
+- Validation Rule: El sistema no debe registrar al paciente si el código de responsable indicado no existe previamente.

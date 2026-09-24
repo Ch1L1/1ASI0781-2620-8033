@@ -1,0 +1,3 @@
+- Registrar consultas médicas (Código, Código de paciente, Código de médico, Fecha, Motivo, Peso, Talla, Observaciones, Costo).
+- Añadir la consulta directamente al historial del paciente.
+- Validation Rule: Validar que el paciente y el médico existan previamente, y que Peso > 0, Talla > 0 y Costo > 0.

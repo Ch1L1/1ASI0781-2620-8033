@@ -1,0 +1,3 @@
+- Diseñar y programar el menú principal de la clínica y sus submenús.
+- Crear funciones de validación reutilizables (por ejemplo: validar que una opción del menú sea válida, que los textos no estén vacíos, que los códigos sean únicos).
+- Unir las piezas principales para que el programa corra de manera fluida.

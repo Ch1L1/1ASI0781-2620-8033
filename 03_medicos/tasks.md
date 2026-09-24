@@ -1,0 +1,5 @@
+- Registrar médicos (Código, CMP, Nombres, Apellidos, Área o especialidad pediátrica).
+- Listar médicos.
+- Buscar un médico por código o filtrar por especialidad (Pediatría general, Neonatología, Cardiología, Neumología, Gastroenterología).
+- Modificar información básica del médico.
+- Validation Rule: El CMP no podrá repetirse.
