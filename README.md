@@ -1,5 +1,7 @@
 # CASO 8: SISTEMA DE GESTIÓN DE CLÍNICA PEDIÁTRICA 🏥
 
+Report link: [report](https://docs.google.com/document/d/1I2AcPpxUMJaeGaHfc0_Qv70RVFU2SseBCaY1qZsDkB4/edit?usp=sharing)
+
 ## 📋 Tabla de Contenidos
 1. [Descripción](#1-descripción)
 2. [Objetivo del Sistema](#2-objetivo-del-sistema)
