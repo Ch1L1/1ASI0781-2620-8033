@@ -203,14 +203,13 @@ def dias_mes(mes, anio):
 
 
 def validar_fecha(fecha_str):
-    partes = fecha_str.split("/")
-    if len(partes) != 3:
+    if len(fecha_str) != 10 or fecha_str[2] != "/" or fecha_str[5] != "/":
         return None
 
     try:
-        dia = int(partes[0])
-        mes = int(partes[1])
-        anio = int(partes[2])
+        dia = int(fecha_str[:2])
+        mes = int(fecha_str[3:5])
+        anio = int(fecha_str[6:])
     except ValueError:
         return None
 
@@ -309,7 +308,7 @@ def cargar_demo():
 
 def reg_responsable():
     print("\n--- REGISTRO DE RESPONSABLE ---")
-    cod = input("Codigo del responsable: ").strip().upper()
+    cod = input("Codigo del responsable: ")
     cod_existe = False
     for resp in responsables:
         if resp["codigo"] == cod:
@@ -321,7 +320,7 @@ def reg_responsable():
         return
 
     while True:
-        dni = input("DNI (8 digitos): ").strip()
+        dni = input("DNI (8 digitos): ")
         if len(dni) == 8 and dni.isdigit():
             dni_existe = False
             for resp in responsables:
@@ -335,16 +334,16 @@ def reg_responsable():
             break
         print("ERROR: El DNI debe ser numerico y tener exactamente 8 digitos.")
 
-    nom = input("Nombres: ").strip().title()
-    ape = input("Apellidos: ").strip().title()
+    nom = input("Nombres: ")
+    ape = input("Apellidos: ")
 
     while True:
-        tel = input("Telefono (9 digitos, inicia con 9): ").strip()
+        tel = input("Telefono (9 digitos, inicia con 9): ")
         if len(tel) == 9 and tel.isdigit() and tel[0] == "9":
             break
         print("ERROR: El telefono debe tener 9 digitos, ser numerico y comenzar con 9.")
 
-    par = input("Parentesco (Padre, Madre, Tutor, etc.): ").strip().capitalize()
+    par = input("Parentesco (Padre, Madre, Tutor, etc.): ").capitalize()
 
     responsables.append({
         "codigo": cod,
@@ -360,7 +359,7 @@ def reg_responsable():
 def reg_paciente(fecha_act):
     print("\n--- REGISTRO DE NUEVO PACIENTE ---")
 
-    cod_resp = input("Ingrese el Codigo del Responsable: ").strip().upper()
+    cod_resp = input("Ingrese el Codigo del Responsable: ")
     resp_existe = False
     for resp in responsables:
         if resp["codigo"] == cod_resp:
@@ -372,7 +371,7 @@ def reg_paciente(fecha_act):
         print("Debe registrar primero al responsable o verificar el codigo.")
         return
 
-    cod = input("Codigo del Paciente: ").strip().upper()
+    cod = input("Codigo del Paciente: ")
     cod_existe = False
     for pac in pacientes:
         if pac["codigo"] == cod:
@@ -384,7 +383,7 @@ def reg_paciente(fecha_act):
         return
 
     while True:
-        dni = input("DNI del Paciente (8 digitos): ").strip()
+        dni = input("DNI del Paciente (8 digitos): ")
         if len(dni) == 8 and dni.isdigit():
             dni_existe = False
             for pac in pacientes:
@@ -398,17 +397,17 @@ def reg_paciente(fecha_act):
             break
         print("ERROR: El DNI debe tener exactamente 8 digitos numericos.")
 
-    nom = input("Nombres: ").strip().title()
-    ape = input("Apellidos: ").strip().title()
+    nom = input("Nombres: ")
+    ape = input("Apellidos: ")
 
     while True:
-        sexo = input("Sexo (M/F): ").strip().upper()
+        sexo = input("Sexo (M/F): ")
         if sexo in ["M", "F"]:
             break
         print("Opcion invalida. Ingrese 'M' o 'F'.")
 
     while True:
-        fecha_str = input("Fecha de nacimiento (DD/MM/AAAA): ").strip()
+        fecha_str = input("Fecha de nacimiento (DD/MM/AAAA): ")
         fecha_nac = validar_fecha(fecha_str)
 
         if fecha_nac is None:
@@ -455,7 +454,7 @@ def buscar_paciente(fecha_act):
         print("No hay pacientes registrados.")
         return
 
-    busq = input("Ingrese DNI, Nombre o Apellido a buscar: ").strip().lower()
+    busq = input("Ingrese DNI, Nombre o Apellido a buscar: ").lower()
     hallados = []
 
     for p in pacientes:
@@ -517,7 +516,7 @@ def menu():
         print("5. Listar responsables registrados")
         print("6. Salir")
 
-        op = input("Seleccione una opcion (1-6): ").strip()
+        op = input("Seleccione una opcion (1-6): ")
 
         if op == "1":
             reg_paciente(fecha_act)
@@ -613,7 +612,7 @@ def busca_medico_esp():
 
 
 def registra_medico():
-    codigo = input("Ingrese código (Enter para terminar): ").strip()
+    codigo = input("Ingrese código (Enter para terminar): ")
     if not codigo:
         print("Registro de médicos finalizado.\n")
         return False
@@ -725,7 +724,7 @@ def menu_medicos():
         print("4. Buscar médicos por especialidad")
         print("5. Modificar médico")
         print("6. Volver al menú principal")
-        opcion = input("Seleccione opción: ").strip()
+        opcion = input("Seleccione opción: ")
 
         if opcion == "1":
             registra_medico()
@@ -829,11 +828,10 @@ def ingresa_consulta(lista_consultas, pacientes_lista, medicos_lista):
 def listar_pacientes(pacientes):
     print("\nLISTADO GENERAL DE PACIENTES:\n")
     for p in pacientes:
-        fecha_nac = p.get("f_nac")
-        if fecha_nac is None:
+        if "f_nac" not in p:
             fecha_txt = p["fecha_nacimiento"]
         else:
-            dia, mes, anio = fecha_nac
+            dia, mes, anio = p["f_nac"]
             fecha_txt = f"{dia:02d}/{mes:02d}/{anio}"
         print(
             f"Código: {p['codigo']} | DNI: {p['dni']} | Nombre: {p['nombres']} {p['apellidos']} | "
@@ -899,7 +897,9 @@ def consul_medico(consultas, medicos):
 
 
 def ingreso_total(consultas):
-    total = sum(cons['Costo'] for cons in consultas)
+    total = 0
+    for cons in consultas:
+        total += cons['Costo']
     print(f"\nIngreso total generado por consultas: ${total}")
 
 
@@ -909,7 +909,9 @@ def promedio_costo(consultas):
         print("\nPromedio del costo de las consultas: $0")
         return
 
-    suma = sum(cons['Costo'] for cons in consultas)
+    suma = 0
+    for cons in consultas:
+        suma += cons['Costo']
     prom = suma / total_cons
     print(f"\nPromedio del costo de las consultas: ${prom}")
 
@@ -924,7 +926,10 @@ def paciente_max(consultas, pacientes):
 
     for pac in pacientes:
         cod_pac = pac['codigo']
-        cont = sum(1 for cons in consultas if cons['Codigo Paciente'] == cod_pac)
+        cont = 0
+        for cons in consultas:
+            if cons['Codigo Paciente'] == cod_pac:
+                cont += 1
 
         if cont > max_cons:
             max_cons = cont
@@ -940,11 +945,10 @@ def edad_rangos(pacientes):
     rango_12_17 = 0
 
     for pac in pacientes:
-        fecha_nac = pac.get("f_nac")
-        if fecha_nac is None:
+        if "f_nac" not in pac:
             anio_nac = int(pac["fecha_nacimiento"][:4])
         else:
-            anio_nac = fecha_nac[2]
+            anio_nac = pac["f_nac"][2]
         edad = 2026 - anio_nac
 
         if 0 <= edad <= 2:
@@ -998,7 +1002,7 @@ def reg_consulta_facade():
 
 
 def hist_paciente_facade():
-    dni = input("Ingrese DNI del paciente: ").strip()
+    dni = input("Ingrese DNI del paciente: ")
     pac = None
     for item in pacientes:
         if item["dni"] == dni:
@@ -1026,14 +1030,14 @@ def reportes_facade():
         print("11. Consultas por fecha")
         print("12. Ingresos por médico")
         print("13. Volver")
-        opcion = input("Seleccione opción: ").strip()
+        opcion = input("Seleccione opción: ")
 
         if opcion == "1":
             listar_pacientes(pacientes)
         elif opcion == "2":
             listar_medicos(medicos)
         elif opcion == "3":
-            cod = input("Código del médico: ").strip().upper()
+            cod = input("Código del médico: ")
             pacientes_medico(consultas, pacientes, cod)
         elif opcion == "4":
             hist_paciente_facade()
@@ -1050,10 +1054,10 @@ def reportes_facade():
         elif opcion == "10":
             edad_rangos(pacientes)
         elif opcion == "11":
-            fecha = input("Ingrese la fecha de consulta (DD/MM/AAAA): ").strip()
+            fecha = input("Ingrese la fecha de consulta (DD/MM/AAAA): ")
             rep_fecha(consultas, fecha)
         elif opcion == "12":
-            cod = input("Código del médico: ").strip().upper()
+            cod = input("Código del médico: ")
             rep_ing_med(consultas, cod)
         elif opcion == "13":
             break
@@ -1071,7 +1075,7 @@ def main():
         print("5. Consultar historial del paciente")
         print("6. Reportes")
         print("7. Salir")
-        opcion = input("Seleccione opción: ").strip()
+        opcion = input("Seleccione opción: ")
 
         if opcion == "1":
             menu_resp(responsables, pacientes)
