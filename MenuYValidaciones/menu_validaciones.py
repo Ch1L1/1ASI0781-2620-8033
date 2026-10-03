@@ -2,22 +2,12 @@ from Medicos.medicos import menu_medicos
 from Pacientes.pacientes import menu as menu_pacientes
 from Responsables.responsables import menu_resp
 from Reportes.reportes import (
-    edad_rangos,
-    ingreso_total,
-    paciente_max,
-    promedio_costo,
-    rep_fecha,
-    rep_ing_med,
-    total_consultas,
-    consul_medico,
-    listar_pacientes,
-    listar_medicos,
-    pacientes_medico,
-    hist_paciente,
+    edad_rangos, ingreso_total, paciente_max, promedio_costo, rep_fecha,
+    rep_ing_med, total_consultas, consul_medico, listar_pacientes,
+    listar_medicos, pacientes_medico, hist_paciente,
 )
 from Consultas.consultas import ingresa_consulta
 from datos import consultas, medicos, pacientes, responsables
-
 
 def reg_consulta_facade():
     ingresa_consulta(consultas, pacientes, medicos)

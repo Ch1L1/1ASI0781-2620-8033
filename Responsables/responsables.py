@@ -1,6 +1,5 @@
 from datos import responsables
 
-
 # ---------- VALIDACIONES ----------
 def texto_vacio(texto):
     return texto == ""

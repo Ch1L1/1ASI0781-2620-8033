@@ -1,6 +1,4 @@
-
 from datos import pacientes, responsables
-
 
 def es_bisiesto(anio):
     return (anio % 4 == 0 and anio % 100 != 0) or (anio % 400 == 0)
@@ -350,7 +348,3 @@ def menu():
             break
         else:
             print("\nOpcion no valida. Intente nuevamente.")
-
-
-if __name__ == "__main__":
-    menu()

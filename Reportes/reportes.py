@@ -162,36 +162,3 @@ def rep_ing_med(consultas, cod_med):
     print(f"\nREPORTE FINANCIERO DEL MÉDICO: {cod_med}")
     print(f"Total de pacientes atendidos: {num_atenc}")
     print(f"Ingreso total generado: ${ing_med}")
-
-
-def ejecuta_demo():
-    medicos_prueba = [
-        {"codigo": "M001", "cmp": "12345", "nombres": "Carlos", "apellidos": "Pérez", "especialidad": "Pediatría general"},
-        {"codigo": "M002", "cmp": "67890", "nombres": "María", "apellidos": "Gómez", "especialidad": "Neonatología"},
-    ]
-
-    pacientes_prueba = [
-        {"codigo": "P001", "dni": "11111111", "nombres": "Juanito", "apellidos": "Quispe", "fecha_nacimiento": "2024-05-10"},
-        {"codigo": "P002", "dni": "22222222", "nombres": "Anita", "apellidos": "Rojas", "fecha_nacimiento": "2020-03-15"},
-        {"codigo": "P003", "dni": "33333333", "nombres": "Pepito", "apellidos": "Mamani", "fecha_nacimiento": "2012-08-20"},
-    ]
-
-    consultas_prueba = [
-        {"Codigo": "C001", "Codigo Paciente": "P001", "Codigo Medico": "M001", "Fecha": "2026-06-06", "Motivo": "Fiebre", "Peso": 12.5, "Talla": 85.0, "Observaciones": "Leve", "Costo": 50.0},
-        {"Codigo": "C002", "Codigo Paciente": "P001", "Codigo Medico": "M001", "Fecha": "2026-06-10", "Motivo": "Control", "Peso": 13.0, "Talla": 87.0, "Observaciones": "Sano", "Costo": 40.0},
-        {"Codigo": "C003", "Codigo Paciente": "P002", "Codigo Medico": "M002", "Fecha": "2026-06-06", "Motivo": "Tos", "Peso": 20.0, "Talla": 110.0, "Observaciones": "Bronquios", "Costo": 60.0},
-    ]
-
-    listar_pacientes(pacientes_prueba)
-    listar_medicos(medicos_prueba)
-    total_consultas(consultas_prueba)
-    ingreso_total(consultas_prueba)
-    promedio_costo(consultas_prueba)
-    paciente_max(consultas_prueba, pacientes_prueba)
-    edad_rangos(pacientes_prueba)
-    rep_fecha(consultas_prueba, "2026-06-06")
-    rep_ing_med(consultas_prueba, "M001")
-
-
-if __name__ == "__main__":
-    ejecuta_demo()

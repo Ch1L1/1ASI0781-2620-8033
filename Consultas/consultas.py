@@ -77,18 +77,3 @@ def ingresa_consulta(lista_consultas, pacientes_lista, medicos_lista):
 
     lista_consultas.append(nueva_consulta)
     print("Consulta guardada con éxito!")
-
-
-def ejecuta_demo():
-    pacientes = [{"codigo": "P001", "nombres": "Juan"}]
-    medicos = [{"codigo": "M001", "nombres": "Dr. House"}]
-    mis_consultas = []
-
-    ingresa_consulta(mis_consultas, pacientes, medicos)
-
-    print("\n--- LISTA FINAL DE CONSULTAS ---")
-    print(mis_consultas)
-
-
-if __name__ == "__main__":
-    ejecuta_demo()

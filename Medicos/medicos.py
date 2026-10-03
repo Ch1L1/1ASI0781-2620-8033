@@ -1,6 +1,4 @@
-
 from datos import medicos
-
 
 def muestra_medico(medico):
     print(
@@ -205,7 +203,3 @@ def menu_medicos():
             break
         else:
             print("* Opción inválida.")
-
-
-if __name__ == "__main__":
-    menu_medicos()

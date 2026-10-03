@@ -43,9 +43,11 @@ Se mantienen 4 listas de diccionarios:
    - `obs`
    - `costo`
 
-Las cuatro listas se crean una sola vez en `datos.py`. Los módulos de responsables,
-pacientes y médicos importan esas mismas listas, el menú principal también las pasa
-directamente a consultas y reportes, sin crear copias.
+Todo el programa está en un solo archivo, `main.py`, incluyendo las cuatro listas,
+las funciones de responsables, pacientes, médicos, consultas y reportes, y los menús.
+Las listas se crean una sola vez al inicio del script y se usan en todas las secciones.
+Las versiones modulares se conservan en sus carpetas (`Responsables/`, `Pacientes/`,
+`Medicos/`, `Consultas/`, `Reportes/` y `MenuYValidaciones/`) para desarrollo posterior, la aplicación independiente que se ejecuta y entrega es `main.py`.
 
 Especialidades permitidas:
 - Pediatría general
