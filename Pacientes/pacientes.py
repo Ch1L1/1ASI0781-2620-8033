@@ -1,253 +1,293 @@
-from datetime import datetime, date
 
-class Responsable:
-    """Clase que representa al tutor o responsable del paciente."""
-    def __init__(self, codigo: str, dni: str, nombres: str, apellidos: str, telefono: str, parentesco: str):
-        self.codigo = codigo.strip().upper()
-        self.dni = dni.strip()
-        self.nombres = nombres.strip().title()
-        self.apellidos = apellidos.strip().title()
-        self.telefono = telefono.strip()
-        self.parentesco = parentesco.strip().capitalize()
+resp_db = {}
+paci_db = {}
 
-    def mostrar_datos(self) -> str:
-        return (f"Codigo: {self.codigo} | DNI: {self.dni} | "
-                f"Nombre: {self.nombres} {self.apellidos} | "
-                f"Telefono: {self.telefono} | Parentesco: {self.parentesco}")
+def es_bisiesto(a):
+    return (a % 4 == 0 and a % 100 != 0) or (a % 400 == 0)
 
 
-class Paciente:
-    """Clase que representa a un paciente registrado."""
-    def __init__(self, codigo: str, dni: str, nombres: str, apellidos: str, fecha_nacimiento: date, sexo: str, cod_responsable: str):
-        self.codigo = codigo.strip().upper()
-        self.dni = dni.strip()
-        self.nombres = nombres.strip().title()
-        self.apellidos = apellidos.strip().title()
-        self.fecha_nacimiento = fecha_nacimiento
-        self.sexo = sexo.strip().upper()
-        self.cod_responsable = cod_responsable.strip().upper()
-
-    def calcular_edad_exacta(self) -> tuple:
-        """Calcula la edad exacta en años, meses y días respecto a la fecha actual."""
-        hoy = date.today()
-        anos = hoy.year - self.fecha_nacimiento.year
-        meses = hoy.month - self.fecha_nacimiento.month
-        dias = hoy.day - self.fecha_nacimiento.day
-
-        if dias < 0:
-            meses -= 1
-            mes_anterior = hoy.month - 1 if hoy.month > 1 else 12
-            ano_ajuste = hoy.year if hoy.month > 1 else hoy.year - 1
-            dias += (date(ano_ajuste, mes_anterior % 12 + 1, 1) - date(ano_ajuste, mes_anterior, 1)).days
-
-        if meses < 0:
-            anos -= 1
-            meses += 12
-
-        return anos, meses, dias
-
-    def obtener_resumen_linea(self) -> str:
-        anos, meses, dias = self.calcular_edad_exacta()
-        f_nac = self.fecha_nacimiento.strftime("%d/%m/%Y")
-        return f"{self.codigo:<8} {self.dni:<10} {self.nombres + ' ' + self.apellidos:<25} {f_nac:<12} {self.sexo:<5} {anos}a {meses}m {dias}d"
+def dias_mes(m, a):
+    if m in [1, 3, 5, 7, 8, 10, 12]:
+        return 31
+    elif m in [4, 6, 9, 11]:
+        return 30
+    elif m == 2:
+        if es_bisiesto(a):
+            return 29
+        else:
+            return 28
+    return 0
 
 
-class SistemaHospital:
-    def __init__(self):
-        self.responsables = {}
-        self.pacientes = {}
+def validar_fecha(f_str):
+    p = f_str.split("/")
+    if len(p) != 3:
+        return None
 
-    def cargar_datos_demo(self):
-        """Carga datos de prueba iniciales."""
-        r1 = Responsable("RESP01", "09876543", "Carlos", "Mendoza Rios", "987654321", "Padre")
-        r2 = Responsable("RESP02", "11223344", "Maria", "Gomez Perales", "912345678", "Madre")
-        self.responsables[r1.codigo] = r1
-        self.responsables[r2.codigo] = r2
+    try:
+        d = int(p[0])
+        m = int(p[1])
+        a = int(p[2])
+    except ValueError:
+        return None
 
-    def registrar_responsable(self):
-        """Registra un responsable validando DNI y Telefono con len y try-except."""
-        print("\n--- REGISTRO DE RESPONSABLE ---")
-        cod = input("Codigo del responsable: ").strip().upper()
-        if cod in self.responsables:
-            print("ERROR: Ya existe un responsable registrado con ese codigo.")
-            return
+    if a < 1900 or a > 2026 or m < 1 or m > 12:
+        return None
+
+    if d < 1 or d > dias_mes(m, a):
+        return None
+
+    return (d, m, a)
 
 
-        while True:
-            dni = input("DNI (8 digitos): ").strip()
-            if len(dni) == 8:
-                try:
-                    int(dni) 
-                    break
-                except ValueError:
-                    print("ERROR: El DNI debe contener solo numeros.")
-            else:
-                print("ERROR: El DNI debe tener exactamente 8 digitos.")
+def es_futura(f_nac, f_act):
+    d1, m1, a1 = f_nac
+    d2, m2, a2 = f_act
 
-        nombres = input("Nombres: ").strip()
-        apellidos = input("Apellidos: ").strip()
+    if a1 > a2:
+        return True
+    elif a1 == a2:
+        if m1 > m2:
+            return True
+        elif m1 == m2 and d1 > d2:
+            return True
+    return False
 
-     
-        while True:
-            telefono = input("Telefono (9 digitos, inicia con 9): ").strip()
-            if len(telefono) == 9 and telefono[0] == "9":
-                try:
-                    int(telefono)  
-                    break
-                except ValueError:
-                    print("ERROR: El telefono debe contener solo numeros.")
-            else:
-                print("ERROR: El telefono debe tener 9 digitos y comenzar con 9.")
 
-        parentesco = input("Parentesco (Padre, Madre, Tutor, etc.): ").strip()
+def calcular_edad(f_nac, f_act):
+    d1, m1, a1 = f_nac
+    d2, m2, a2 = f_act
 
-        nuevo_resp = Responsable(cod, dni, nombres, apellidos, telefono, parentesco)
-        self.responsables[cod] = nuevo_resp
-        print(f"Responsable '{nuevo_resp.nombres} {nuevo_resp.apellidos}' registrado con exito.")
+    anos = a2 - a1
+    meses = m2 - m1
+    dias = d2 - d1
 
-    def registrar_paciente(self):
-        """Registra un paciente con validacion de DNI con len y try-except."""
-        print("\n--- REGISTRO DE NUEVO PACIENTE ---")
-        
-        cod_resp = input("Ingrese el Codigo del Responsable: ").strip().upper()
-        if cod_resp not in self.responsables:
-            print(f"ERROR: El codigo de responsable '{cod_resp}' NO existe en el sistema.")
-            print("Debe registrar primero al responsable (Opcion 2) o verificar el codigo.")
-            return
+    if dias < 0:
+        meses = meses - 1
+        if m2 > 1:
+            m_prev = m2 - 1
+            a_prev = a2
+        else:
+            m_prev = 12
+            a_prev = a2 - 1
+        dias = dias + dias_mes(m_prev, a_prev)
 
-        cod = input("Codigo del Paciente: ").strip().upper()
-        if cod in self.pacientes:
-            print("ERROR: Ya existe un paciente con ese codigo.")
-            return
+    if meses < 0:
+        anos = anos - 1
+        meses = meses + 12
 
-        while True:
-            dni = input("DNI del Paciente (8 digitos): ").strip()
-            if len(dni) == 8:
-                try:
-                    int(dni)  
-                    break
-                except ValueError:
-                    print("ERROR: El DNI debe contener solo numeros.")
-            else:
-                print("ERROR: El DNI debe tener exactamente 8 digitos.")
+    return anos, meses, dias
 
-        nombres = input("Nombres: ").strip()
-        apellidos = input("Apellidos: ").strip()
 
-        while True:
-            sexo = input("Sexo (M/F): ").strip().upper()
-            if sexo in ["M", "F"]:
-                break
-            print("Opcion invalida. Ingrese 'M' o 'F'.")
+def formato_resp(r):
+    return f"Codigo: {r['cod']} | DNI: {r['dni']} | Nombre: {r['nom']} {r['ape']} | Telefono: {r['tel']} | Parentesco: {r['par']}"
 
-        while True:
-            f_str = input("Fecha de nacimiento (DD/MM/AAAA): ").strip()
-            try:
-                f_nac = datetime.strptime(f_str, "%d/%m/%Y").date()
-                if f_nac > date.today():
-                    print("La fecha de nacimiento no puede ser futura.")
-                    continue
-                break
-            except ValueError:
-                print("Formato de fecha incorrecto. Use DD/MM/AAAA (ejemplo: 15/08/2010).")
 
-        paciente = Paciente(cod, dni, nombres, apellidos, f_nac, sexo, cod_resp)
-        self.pacientes[cod] = paciente
-        print(f"Paciente '{paciente.nombres} {paciente.apellidos}' registrado correctamente.")
+def cargar_demo():
+    resp_db["RESP01"] = {
+        "cod": "RESP01",
+        "dni": "09876543",
+        "nom": "Carlos",
+        "ape": "Mendoza Rios",
+        "tel": "987654321",
+        "par": "Padre"
+    }
+    resp_db["RESP02"] = {
+        "cod": "RESP02",
+        "dni": "11223344",
+        "nom": "Maria",
+        "ape": "Gomez Perales",
+        "tel": "912345678",
+        "par": "Madre"
+    }
 
-    def listar_pacientes(self):
-        """Muestra la lista general de pacientes."""
-        print("\n--- LISTADO GENERAL DE PACIENTES ---")
-        if not self.pacientes:
-            print("No hay pacientes registrados en el sistema.")
-            return
+def reg_responsable():
+    print("\n--- REGISTRO DE RESPONSABLE ---")
+    c = input("Codigo del responsable: ").strip().upper()
+    if c in resp_db:
+        print("ERROR: Ya existe un responsable registrado con ese codigo.")
+        return
 
-        print(f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} {'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}")
-        print("-" * 75)
-        for pac in self.pacientes.values():
-            print(pac.obtener_resumen_linea())
+    while True:
+        d = input("DNI (8 digitos): ").strip()
+        if len(d) == 8 and d.isdigit():
+            break
+        print("ERROR: El DNI debe ser numerico y tener exactamente 8 digitos.")
 
-    def buscar_paciente(self):
-        """Busca paciente por DNI o Nombre/Apellido."""
-        print("\n--- BUSQUEDA DE PACIENTE ---")
-        if not self.pacientes:
-            print("No hay pacientes registrados.")
-            return
+    nom = input("Nombres: ").strip().title()
+    ape = input("Apellidos: ").strip().title()
 
-        criterio = input("Ingrese DNI, Nombre o Apellido a buscar: ").strip().lower()
-        encontrados = []
+    while True:
+        t = input("Telefono (9 digitos, inicia con 9): ").strip()
+        if len(t) == 9 and t.isdigit() and t[0] == "9":
+            break
+        print("ERROR: El telefono debe tener 9 digitos, ser numerico y comenzar con 9.")
 
-        for pac in self.pacientes.values():
-            nombre_completo = f"{pac.nombres} {pac.apellidos}".lower()
-            if criterio in pac.dni or criterio in nombre_completo:
-                encontrados.append(pac)
+    par = input("Parentesco (Padre, Madre, Tutor, etc.): ").strip().capitalize()
 
-        if not encontrados:
-            print(f"No se encontraron pacientes que coincidan con '{criterio}'.")
-            return
+    resp_db[c] = {
+        "cod": c,
+        "dni": d,
+        "nom": nom,
+        "ape": ape,
+        "tel": t,
+        "par": par
+    }
+    print(f"Responsable '{nom} {ape}' registrado con exito.")
 
-        print(f"\nSe encontraron {len(encontrados)} coincidencia(s):")
-        for pac in encontrados:
-            anos, meses, dias = pac.calcular_edad_exacta()
-            responsable = self.responsables.get(pac.cod_responsable)
 
-            print("\n" + "=" * 60)
-            print("DATOS DEL PACIENTE")
-            print(f" - Codigo: {pac.codigo} | DNI: {pac.dni}")
-            print(f" - Nombre Completo: {pac.nombres} {pac.apellidos}")
-            print(f" - Fecha de Nacimiento: {pac.fecha_nacimiento.strftime('%d/%m/%Y')}")
-            print(f" - Sexo: {pac.sexo}")
-            print(f" - Edad Exacta: {anos} anos, {meses} meses y {dias} dias")
-            print("-" * 60)
-            print("DATOS COMPLETOS DEL RESPONSABLE ASOCIADO")
-            if responsable:
-                print(f" - {responsable.mostrar_datos()}")
-            else:
-                print(" - Informacion de responsable no disponible.")
-            print("=" * 60)
+def reg_paciente(f_act):
+    print("\n--- REGISTRO DE NUEVO PACIENTE ---")
 
-    def listar_responsables(self):
-        """Lista los responsables registrados."""
-        print("\n--- LISTA DE RESPONSABLES REGISTRADOS ---")
-        if not self.responsables:
-            print("No hay responsables registrados.")
-            return
-        for r in self.responsables.values():
-            print(f" - {r.mostrar_datos()}")
+    c_resp = input("Ingrese el Codigo del Responsable: ").strip().upper()
+    if c_resp not in resp_db:
+        print(f"ERROR: El codigo de responsable '{c_resp}' NO existe en el sistema.")
+        print("Debe registrar primero al responsable o verificar el codigo.")
+        return
 
-    def ejecutar_menu(self):
-        """Menú principal utilizando estructuras condicionales tradicionales."""
-        self.cargar_datos_demo()
+    c = input("Codigo del Paciente: ").strip().upper()
+    if c in paci_db:
+        print("ERROR: Ya existe un paciente registrado con ese codigo.")
+        return
 
-        while True:
-            print("\n==========================================")
-            print("      SISTEMA DE GESTION HOSPITALARIA     ")
-            print("==========================================")
-            print("1. Registrar paciente")
-            print("2. Registrar responsable")
-            print("3. Listar todos los pacientes")
-            print("4. Buscar paciente (por DNI o Nombre/Apellido)")
-            print("5. Listar responsables registrados")
-            print("6. Salir")
+    while True:
+        d = input("DNI del Paciente (8 digitos): ").strip()
+        if len(d) == 8 and d.isdigit():
+            break
+        print("ERROR: El DNI debe tener exactamente 8 digitos numericos.")
 
-            opcion = input("Seleccione una opcion (1-6): ").strip()
+    nom = input("Nombres: ").strip().title()
+    ape = input("Apellidos: ").strip().title()
 
-            if opcion == "1":
-                self.registrar_paciente()
-            elif opcion == "2":
-                self.registrar_responsable()
-            elif opcion == "3":
-                self.listar_pacientes()
-            elif opcion == "4":
-                self.buscar_paciente()
-            elif opcion == "5":
-                self.listar_responsables()
-            elif opcion == "6":
-                print("\nSaliendo del sistema...")
-                break
-            else:
-                print("\nOpcion no valida. Intente nuevamente.")
+    while True:
+        s = input("Sexo (M/F): ").strip().upper()
+        if s in ["M", "F"]:
+            break
+        print("Opcion invalida. Ingrese 'M' o 'F'.")
+
+    while True:
+        f_str = input("Fecha de nacimiento (DD/MM/AAAA): ").strip()
+        f_nac = validar_fecha(f_str)
+
+        if f_nac == None:
+            print("Formato de fecha incorrecto o dia/mes no valido. Use DD/MM/AAAA (ej: 15/08/2018).")
+            continue
+
+        if es_futura(f_nac, f_act):
+            print("ERROR: La fecha de nacimiento no puede ser posterior a la fecha actual del sistema.")
+            continue
+
+        break
+
+    paci_db[c] = {
+        "cod": c,
+        "dni": d,
+        "nom": nom,
+        "ape": ape,
+        "fnac": f_nac,
+        "sexo": s,
+        "c_resp": c_resp
+    }
+    print(f"Paciente '{nom} {ape}' registrado correctamente.")
+
+
+def listar_pacientes(f_act):
+    print("\n--- LISTADO GENERAL DE PACIENTES ---")
+    if not paci_db:
+        print("No hay pacientes registrados en el sistema.")
+        return
+
+    print(f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} {'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}")
+    print("-" * 75)
+    for p in paci_db.values():
+        a, m, d = calcular_edad(p["fnac"], f_act)
+        d_n, m_n, a_n = p["fnac"]
+        f_str = f"{d_n:02d}/{m_n:02d}/{a_n}"
+        nom_comp = f"{p['nom']} {p['ape']}"
+        print(f"{p['cod']:<8} {p['dni']:<10} {nom_comp:<25} {f_str:<12} {p['sexo']:<5} {a}a {m}m {d}d")
+
+
+def buscar_paciente(f_act):
+    print("\n--- BUSQUEDA DE PACIENTE ---")
+    if not paci_db:
+        print("No hay pacientes registrados.")
+        return
+
+    busqueda = input("Ingrese DNI, Nombre o Apellido a buscar: ").strip().lower()
+    hallados = []
+
+    for p in paci_db.values():
+        nom_comp = f"{p['nom']} {p['ape']}".lower()
+        if busqueda in p["dni"] or busqueda in nom_comp:
+            hallados.append(p)
+
+    if not hallados:
+        print(f"No se encontraron pacientes que coincidan con '{busqueda}'.")
+        return
+
+    print(f"\nSe encontraron {len(hallados)} coincidencia(s):")
+    for p in hallados:
+        a, m, d = calcular_edad(p["fnac"], f_act)
+        r = resp_db.get(p["c_resp"])
+        d_n, m_n, a_n = p["fnac"]
+
+        print("\n" + "=" * 65)
+        print("DATOS DEL PACIENTE")
+        print(f" - Codigo: {p['cod']} | DNI: {p['dni']}")
+        print(f" - Nombre Completo: {p['nom']} {p['ape']}")
+        print(f" - Fecha de Nacimiento: {d_n:02d}/{m_n:02d}/{a_n}")
+        print(f" - Sexo: {p['sexo']}")
+        print(f" - Edad Exacta: {a} anos, {m} meses y {d} dias")
+        print("-" * 65)
+        print("DATOS COMPLETOS DEL RESPONSABLE ASOCIADO")
+        if r:
+            print(f" - {formato_resp(r)}")
+        else:
+            print(" - Informacion de responsable no disponible.")
+        print("=" * 65)
+
+
+def listar_responsables():
+    print("\n--- LISTA DE RESPONSABLES REGISTRADOS ---")
+    if not resp_db:
+        print("No hay responsables registrados.")
+        return
+    for r in resp_db.values():
+        print(f" - {formato_resp(r)}")
+
+def menu():
+    cargar_demo()
+    f_act = (2, 10, 2026)
+
+    while True:
+        print("\n==========================================")
+        print("    SISTEMA DE GESTION CLINICA PEDIATRICA ")
+        print("==========================================")
+        print("1. Registrar paciente")
+        print("2. Registrar responsable")
+        print("3. Listar todos los pacientes")
+        print("4. Buscar paciente (por DNI o Nombre/Apellido)")
+        print("5. Listar responsables registrados")
+        print("6. Salir")
+
+        op = input("Seleccione una opcion (1-6): ").strip()
+
+        if op == "1":
+            reg_paciente(f_act)
+        elif op == "2":
+            reg_responsable()
+        elif op == "3":
+            listar_pacientes(f_act)
+        elif op == "4":
+            buscar_paciente(f_act)
+        elif op == "5":
+            listar_responsables()
+        elif op == "6":
+            print("\nSaliendo del programa...")
+            break
+        else:
+            print("\nOpcion no valida. Intente nuevamente.")
+
 
 if __name__ == "__main__":
-    app = SistemaHospital()
-    app.ejecutar_menu()
+    menu()
