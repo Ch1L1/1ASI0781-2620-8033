@@ -1,38 +1,37 @@
 
-medicos = []
+from datos import medicos
 
 
-def listarMedico(medico):
+def muestra_medico(medico):
     print(
         f"Codigo: {medico['codigo']}\n"
-        f"CMP: {medico['CMP']}\n"
-        f"Nombre: {medico['nombre']}\n"
-        f"Apellido: {medico['apellido']}\n"
-        f"Área o especialidad pediátrica: {medico['areaEspecialidad']}"
+        f"CMP: {medico['cmp']}\n"
+        f"Nombre: {medico['nombres']}\n"
+        f"Apellido: {medico['apellidos']}\n"
+        f"Área o especialidad pediátrica: {medico['especialidad']}"
     )
 
 
-def buscarMedicoCodigo():
-    codigoIngresado = input("Coloque el código a buscar: ")
+def busca_medico_cod():
+    cod_ing = input("Coloque el código a buscar: ")
 
-    encontrado = False
+    found = False
 
     for medico in medicos:
-        if medico["codigo"] == codigoIngresado:
+        if medico["codigo"] == cod_ing:
             print("\n¡Médico encontrado!")
-            listarMedico(medico)
-            encontrado = True
+            muestra_medico(medico)
+            found = True
 
-    if encontrado == False:
+    if not found:
         print("* Médico no encontrado...")
 
 
-def elegirEspecialidad():
-    opcionValida = False
+def elige_especial():
+    es_valida = False
     opcion = ""
 
-    while opcionValida == False:
-
+    while not es_valida:
         print("Especialidades:")
         print("     1. Pediatría general")
         print("     2. Neonatología")
@@ -42,16 +41,8 @@ def elegirEspecialidad():
 
         opcion = input("Seleccione una especialidad: ")
 
-        if opcion == "1":
-            opcionValida = True
-        elif opcion == "2":
-            opcionValida = True
-        elif opcion == "3":
-            opcionValida = True
-        elif opcion == "4":
-            opcionValida = True
-        elif opcion == "5":
-            opcionValida = True
+        if opcion in ["1", "2", "3", "4", "5"]:
+            es_valida = True
         else:
             print("* Opción inválida. Intente nuevamente.\n")
 
@@ -67,126 +58,102 @@ def elegirEspecialidad():
         return "Gastroenterología pediátrica"
 
 
-def buscarMedicoEspecialidad():
-
+def busca_medico_esp():
     print("\nSelecciona una especialidad para buscar médicos: ")
 
-    especialidadBuscada = elegirEspecialidad()
+    esp_buscada = elige_especial()
+    found = False
 
-    encontrado = False
-
-    print(f"\nMédicos de {especialidadBuscada}:\n")
+    print(f"\nMédicos de {esp_buscada}:\n")
 
     for medico in medicos:
-        if medico["areaEspecialidad"] == especialidadBuscada:
-            listarMedico(medico)
+        if medico["especialidad"] == esp_buscada:
+            muestra_medico(medico)
             print()
-            encontrado = True
+            found = True
 
-    if encontrado == False:
+    if not found:
         print("* No hay médicos registrados en esa especialidad.")
 
 
-def registrarMedico():
+def registra_medico():
+    codigo = input("Ingrese código (Enter para terminar): ").strip()
+    if not codigo:
+        print("Registro de médicos finalizado.\n")
+        return False
 
-    codigo = input("Ingrese código: ")
+    cmp_valido = False
 
-    CMPValido = False
+    while not cmp_valido:
+        cmp = int(input("Ingrese CMP: "))
+        rep = False
 
-    while CMPValido == False:
-
-        CMP = int(input("Ingrese CMP: "))
-
-        repetido = False
-
-        if CMP < 0:
+        if cmp < 0:
             print("* El CMP no puede ser negativo.")
-
         else:
             for medico in medicos:
-                if medico["CMP"] == CMP:
-                    repetido = True
+                if medico["cmp"] == cmp:
+                    rep = True
 
-            if repetido == True:
+            if rep:
                 print("* Ese CMP ya está registrado. Ingrese otro.")
             else:
-                CMPValido = True
+                cmp_valido = True
 
-    nombre = input("Ingrese nombre: ")
-    apellido = input("Ingrese apellido: ")
+    nombres = input("Ingrese nombre: ")
+    apellidos = input("Ingrese apellido: ")
+    area_esp = elige_especial()
 
-    areaEspecialidad = elegirEspecialidad()
-
-    nuevoMedico = {
+    nuevo_medico = {
         "codigo": codigo,
-        "CMP": CMP,
-        "nombre": nombre,
-        "apellido": apellido,
-        "areaEspecialidad": areaEspecialidad
+        "cmp": cmp,
+        "nombres": nombres,
+        "apellidos": apellidos,
+        "especialidad": area_esp,
     }
 
-    medicos.append(nuevoMedico) # linea muy importante de nuevo porque
-                                # hace que todo nuevoMedico se añada
-                                # a la lista completa de medicos
-
+    medicos.append(nuevo_medico)
     print("Médico registrado correctamente.\n")
+    return True
 
 
-def mostrarListaMedicos():
-
+def muestra_medicos():
     print("\nLista completa de médicos:\n")
 
     for medico in medicos:
-        listarMedico(medico)
+        muestra_medico(medico)
         print()
 
 
-def modificarCMP(medico):
+def modifica_cmp(medico):
+    cmp_valido = False
 
-    CMPValido = False
+    while not cmp_valido:
+        nuevo_cmp = int(input("Ingrese nuevo CMP: "))
+        rep = False
 
-    while CMPValido == False:
-
-        nuevoCMP = int(input("Ingrese nuevo CMP: "))
-
-        repetido = False
-
-        if nuevoCMP < 0:
+        if nuevo_cmp < 0:
             print("* El CMP no puede ser negativo.")
-
         else:
-            for otroMedico in medicos:
+            for otro in medicos:
+                if otro["cmp"] == nuevo_cmp and otro["codigo"] != medico["codigo"]:
+                    rep = True
 
-                if (
-                    otroMedico["CMP"] == nuevoCMP
-                    and otroMedico["codigo"] != medico["codigo"]
-                ):
-                    repetido = True
-
-            if repetido == True:
+            if rep:
                 print("* Ese CMP ya está registrado. Ingrese otro.")
-
             else:
-                medico["CMP"] = nuevoCMP
-                CMPValido = True
-
+                medico["cmp"] = nuevo_cmp
+                cmp_valido = True
                 print("\nMédico modificado correctamente.")
 
 
-def modificarMedico():
-
-    codigoIngresado = input(
-        "Ingrese el código del médico a modificar: "
-    )
-
-    encontrado = False
+def modifica_medico():
+    cod_ing = input("Ingrese el código del médico a modificar: ")
+    found = False
 
     for medico in medicos:
-
-        if medico["codigo"] == codigoIngresado:
-
-            encontrado = True
-
+        if medico["codigo"] == cod_ing:
+            found = True
             print("\n¿Qué desea modificar?")
             print("     1. Nombre")
             print("     2. Apellido")
@@ -196,88 +163,49 @@ def modificarMedico():
             opcion = input("Modificar: ")
 
             if opcion == "1":
-
-                medico["nombre"] = input(
-                    "Ingrese nuevo nombre: "
-                )
-
+                medico["nombres"] = input("Ingrese nuevo nombre: ")
                 print("\nMédico modificado correctamente.")
-
             elif opcion == "2":
-
-                medico["apellido"] = input(
-                    "Ingrese nuevo apellido: "
-                )
-
+                medico["apellidos"] = input("Ingrese nuevo apellido: ")
                 print("\nMédico modificado correctamente.")
-
             elif opcion == "3":
-
-                medico["areaEspecialidad"] = elegirEspecialidad()
-
+                medico["especialidad"] = elige_especial()
                 print("\nMédico modificado correctamente.")
-
             elif opcion == "4":
-
-                modificarCMP(medico)
-
+                modifica_cmp(medico)
             else:
                 print("* Opción inválida.")
 
-    if encontrado == False:
+    if not found:
         print("* Médico no encontrado.\n")
 
-######################
-# programa principal #
-######################
 
-numeroValido = False
+def menu_medicos():
+    while True:
+        print("\n=== GESTIÓN DE MÉDICOS ===")
+        print("1. Registrar médico")
+        print("2. Listar médicos")
+        print("3. Buscar médico por código")
+        print("4. Buscar médicos por especialidad")
+        print("5. Modificar médico")
+        print("6. Volver al menú principal")
+        opcion = input("Seleccione opción: ").strip()
 
-while numeroValido == False:
-
-    numeroMedicosRegistrar = int(
-        input("Ingrese el numero de medicos a registrar: ")
-    )
-
-    if numeroMedicosRegistrar > 0:
-        numeroValido = True
-    else:
-        print("* Debes ingresar un número mayor que 0.\n")
-
-
-for numero in range(numeroMedicosRegistrar):
-    registrarMedico()
-
-
-mostrarListaMedicos()
-
-
-buscar = input(
-    "¿Desea buscar médicos? (1 = Sí, 2 = No): "
-)
-
-if buscar == "1":
-
-    print("\n¿Cómo desea buscar?")
-    print("     1. Código")
-    print("     2. Especialidad")
-
-    opcionBuscar = input("Seleccione una opción: ")
-
-    if opcionBuscar == "1":
-        buscarMedicoCodigo()
-
-    elif opcionBuscar == "2":
-        buscarMedicoEspecialidad()
-
-    else:
-        print("* Opción inválida.")
+        if opcion == "1":
+            registra_medico()
+        elif opcion == "2":
+            muestra_medicos()
+        elif opcion == "3":
+            busca_medico_cod()
+        elif opcion == "4":
+            busca_medico_esp()
+        elif opcion == "5":
+            modifica_medico()
+        elif opcion == "6":
+            break
+        else:
+            print("* Opción inválida.")
 
 
-modificar = input(
-    "¿Desea modificar la información "
-    "de algún médico? (1 = Sí, 2 = No): "
-)
-
-if modificar == "1":
-    modificarMedico()
+if __name__ == "__main__":
+    menu_medicos()

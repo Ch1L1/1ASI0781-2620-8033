@@ -1,4 +1,4 @@
-def buscar_medico_codigo(medicos_lista, codigo_medico):
+def busca_medico(medicos_lista, codigo_medico):
     for medico in medicos_lista:
         if medico['codigo'] == codigo_medico:
             print("\n¡Médico encontrado!")
@@ -8,7 +8,7 @@ def buscar_medico_codigo(medicos_lista, codigo_medico):
     return False
 
 
-def buscar_paciente_codigo(pacientes_lista, codigo_paciente):
+def busca_paciente(pacientes_lista, codigo_paciente):
     for paciente in pacientes_lista:
         if paciente['codigo'] == codigo_paciente:
             print("\n¡Paciente encontrado!")
@@ -18,7 +18,7 @@ def buscar_paciente_codigo(pacientes_lista, codigo_paciente):
     return False
 
 
-def verificar_codigo_consulta(lista_consultas, codigo_consulta):
+def valida_consulta(lista_consultas, codigo_consulta):
     for consulta in lista_consultas:
         if codigo_consulta == consulta['Codigo']:
             print("¡Este codigo ya existe!")
@@ -28,18 +28,18 @@ def verificar_codigo_consulta(lista_consultas, codigo_consulta):
     return True
 
 
-def ingresar_consulta(lista_consultas, pacientes_lista, medicos_lista):
+def ingresa_consulta(lista_consultas, pacientes_lista, medicos_lista):
     codigo = input("Ingrese codigo de la consulta: ")
-    if not verificar_codigo_consulta(lista_consultas, codigo):
+    if not valida_consulta(lista_consultas, codigo):
         return
 
     codigo_paciente = input("Ingrese codigo del paciente: ")
-    if not buscar_paciente_codigo(pacientes_lista, codigo_paciente):
+    if not busca_paciente(pacientes_lista, codigo_paciente):
         print("No se puede registrar: El paciente no existe.")
         return
 
     codigo_medico = input("Ingrese codigo del medico: ")
-    if not buscar_medico_codigo(medicos_lista, codigo_medico):
+    if not busca_medico(medicos_lista, codigo_medico):
         print("No se puede registrar: El médico no existe.")
         return
 
@@ -79,16 +79,16 @@ def ingresar_consulta(lista_consultas, pacientes_lista, medicos_lista):
     print("Consulta guardada con éxito!")
 
 
-def ejecutar_demo():
+def ejecuta_demo():
     pacientes = [{"codigo": "P001", "nombres": "Juan"}]
     medicos = [{"codigo": "M001", "nombres": "Dr. House"}]
     mis_consultas = []
 
-    ingresar_consulta(mis_consultas, pacientes, medicos)
+    ingresa_consulta(mis_consultas, pacientes, medicos)
 
     print("\n--- LISTA FINAL DE CONSULTAS ---")
     print(mis_consultas)
 
 
 if __name__ == "__main__":
-    ejecutar_demo()
+    ejecuta_demo()

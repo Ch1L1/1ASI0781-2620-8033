@@ -1,13 +1,19 @@
-def listarPacientesGeneral(pacientes):
+def listar_pacientes(pacientes):
     print("\nLISTADO GENERAL DE PACIENTES:\n")
     for p in pacientes:
+        fecha_nac = p.get("f_nac")
+        if fecha_nac is None:
+            fecha_txt = p["fecha_nacimiento"]
+        else:
+            dia, mes, anio = fecha_nac
+            fecha_txt = f"{dia:02d}/{mes:02d}/{anio}"
         print(
             f"Código: {p['codigo']} | DNI: {p['dni']} | Nombre: {p['nombres']} {p['apellidos']} | "
-            f"Nacimiento: {p['fecha_nacimiento']}"
+            f"Nacimiento: {fecha_txt}"
         )
 
 
-def listarMedicosGeneral(medicos):
+def listar_medicos(medicos):
     print("\nLISTADO GENERAL DE MÉDICOS:\n")
     for m in medicos:
         print(
@@ -16,100 +22,102 @@ def listarMedicosGeneral(medicos):
         )
 
 
-def pacientesAtendidosPorMedico(consultas, pacientes, codigo_medico):
-    print(f"\nPACIENTES ATENDIDOS POR EL MÉDICO: {codigo_medico}\n")
+def pacientes_medico(consultas, pacientes, cod_med):
+    print(f"\nPACIENTES ATENDIDOS POR EL MÉDICO: {cod_med}\n")
 
-    pacientes_vistos = []
-    for consulta in consultas:
-        if consulta['Codigo Medico'] == codigo_medico:
-            codigo_paciente = consulta['Codigo Paciente']
-            if codigo_paciente not in pacientes_vistos:
-                pacientes_vistos.append(codigo_paciente)
+    pac_vistos = []
+    for cons in consultas:
+        if cons['Codigo Medico'] == cod_med:
+            cod_pac = cons['Codigo Paciente']
+            if cod_pac not in pac_vistos:
+                pac_vistos.append(cod_pac)
 
-    for codigo_paciente in pacientes_vistos:
-        for paciente in pacientes:
-            if paciente['codigo'] == codigo_paciente:
-                print(f"- {paciente['nombres']} {paciente['apellidos']} (Código: {paciente['codigo']})")
+    for cod_pac in pac_vistos:
+        for pac in pacientes:
+            if pac['codigo'] == cod_pac:
+                print(f"- {pac['nombres']} {pac['apellidos']} (Código: {pac['codigo']})")
 
 
-def historialConsultasPaciente(consultas, codigo_paciente):
-    print(f"\nHISTORIAL DE CONSULTAS DEL PACIENTE: {codigo_paciente}\n")
+def hist_paciente(consultas, cod_pac):
+    print(f"\nHISTORIAL DE CONSULTAS DEL PACIENTE: {cod_pac}\n")
 
-    contador = 0
-    for consulta in consultas:
-        if consulta['Codigo Paciente'] == codigo_paciente:
+    cont = 0
+    for cons in consultas:
+        if cons['Codigo Paciente'] == cod_pac:
             print(
-                f"Fecha: {consulta['Fecha']} | Motivo: {consulta['Motivo']} | "
-                f"Costo: ${consulta['Costo']} | Peso: {consulta['Peso']}kg"
+                f"Fecha: {cons['Fecha']} | Motivo: {cons['Motivo']} | "
+                f"Costo: ${cons['Costo']} | Peso: {cons['Peso']}kg"
             )
-            contador += 1
+            cont += 1
 
-    if contador == 0:
+    if cont == 0:
         print("El paciente no tiene consultas registradas.")
 
 
-def cantidadTotalConsultas(consultas):
-    contador = len(consultas)
-    print(f"\nCantidad total de consultas realizadas: {contador}")
+def total_consultas(consultas):
+    cont = len(consultas)
+    print(f"\nCantidad total de consultas realizadas: {cont}")
 
 
-def consultasPorMedico(consultas, medicos):
+def consul_medico(consultas, medicos):
     print("\nCANTIDAD DE CONSULTAS POR MÉDICO")
-    for medico in medicos:
-        codigo_medico = medico['codigo']
-        contador = 0
-        for consulta in consultas:
-            if consulta['Codigo Medico'] == codigo_medico:
-                contador += 1
-        print(f"Médico: {medico['nombres']} {medico['apellidos']} ({codigo_medico}) -> {contador} consultas")
+    for med in medicos:
+        cod_med = med['codigo']
+        cont = 0
+        for cons in consultas:
+            if cons['Codigo Medico'] == cod_med:
+                cont += 1
+        print(f"Médico: {med['nombres']} {med['apellidos']} ({cod_med}) -> {cont} consultas")
 
 
-def ingresoTotalConsultas(consultas):
-    total = sum(consulta['Costo'] for consulta in consultas)
+def ingreso_total(consultas):
+    total = sum(cons['Costo'] for cons in consultas)
     print(f"\nIngreso total generado por consultas: ${total}")
 
 
-def promedioCostoConsultas(consultas):
-    total_consultas = len(consultas)
-    if total_consultas == 0:
+def promedio_costo(consultas):
+    total_cons = len(consultas)
+    if total_cons == 0:
         print("\nPromedio del costo de las consultas: $0")
         return
 
-    suma_costos = sum(consulta['Costo'] for consulta in consultas)
-    promedio = suma_costos / total_consultas
-    print(f"\nPromedio del costo de las consultas: ${promedio}")
+    suma = sum(cons['Costo'] for cons in consultas)
+    prom = suma / total_cons
+    print(f"\nPromedio del costo de las consultas: ${prom}")
 
 
-def pacienteMayorConsultas(consultas, pacientes):
+def paciente_max(consultas, pacientes):
     if not consultas:
         print("\nNo hay consultas registradas.")
         return
 
-    max_consultas = 0
-    paciente_ganador = "Ninguno"
+    max_cons = 0
+    pac_win = "Ninguno"
 
-    for paciente in pacientes:
-        codigo_paciente = paciente['codigo']
-        contador = sum(
-            1 for consulta in consultas if consulta['Codigo Paciente'] == codigo_paciente
-        )
+    for pac in pacientes:
+        cod_pac = pac['codigo']
+        cont = sum(1 for cons in consultas if cons['Codigo Paciente'] == cod_pac)
 
-        if contador > max_consultas:
-            max_consultas = contador
-            paciente_ganador = f"{paciente['nombres']} {paciente['apellidos']} ({codigo_paciente})"
+        if cont > max_cons:
+            max_cons = cont
+            pac_win = f"{pac['nombres']} {pac['apellidos']} ({cod_pac})"
 
-    print(f"\nPaciente con mayor cantidad de consultas: {paciente_ganador} con {max_consultas} consultas.")
+    print(f"\nPaciente con mayor cantidad de consultas: {pac_win} con {max_cons} consultas.")
 
 
-def pacientesPorRangoEdad(pacientes):
+def edad_rangos(pacientes):
     rango_0_2 = 0
     rango_3_5 = 0
     rango_6_11 = 0
     rango_12_17 = 0
 
-    for paciente in pacientes:
-        anio_nacimiento = int(paciente['fecha_nacimiento'][:4])
-        edad = 2026 - anio_nacimiento
+    for pac in pacientes:
+        fecha_nac = pac.get("f_nac")
+        if fecha_nac is None:
+            anio_nac = int(pac["fecha_nacimiento"][:4])
+        else:
+            anio_nac = fecha_nac[2]
+        edad = 2026 - anio_nac
 
         if 0 <= edad <= 2:
             rango_0_2 += 1
@@ -127,36 +135,36 @@ def pacientesPorRangoEdad(pacientes):
     print(f"De 12 a 17 años: {rango_12_17} pacientes")
 
 
-def reporteConsultasPorFecha(consultas, fecha_buscada):
-    contador = 0
-    print(f"\n--- CONSULTAS EN LA FECHA: {fecha_buscada} ---")
+def rep_fecha(consultas, fecha_bus):
+    cont = 0
+    print(f"\n--- CONSULTAS EN LA FECHA: {fecha_bus} ---")
 
-    for consulta in consultas:
-        if consulta['Fecha'] == fecha_buscada:
+    for cons in consultas:
+        if cons['Fecha'] == fecha_bus:
             print(
-                f"Código: {consulta['Codigo']} | Paciente: {consulta['Codigo Paciente']} | "
-                f"Médico: {consulta['Codigo Medico']} | Costo: ${consulta['Costo']}"
+                f"Código: {cons['Codigo']} | Paciente: {cons['Codigo Paciente']} | "
+                f"Médico: {cons['Codigo Medico']} | Costo: ${cons['Costo']}"
             )
-            contador += 1
+            cont += 1
 
-    print(f"Total de consultas en esta fecha: {contador}")
-
-
-def reporteIngresosPorMedico(consultas, codigo_medico):
-    ingreso_total_medico = 0
-    cantidad_atenciones = 0
-
-    for consulta in consultas:
-        if consulta['Codigo Medico'] == codigo_medico:
-            ingreso_total_medico += consulta['Costo']
-            cantidad_atenciones += 1
-
-    print(f"\nREPORTE FINANCIERO DEL MÉDICO: {codigo_medico}")
-    print(f"Total de pacientes atendidos: {cantidad_atenciones}")
-    print(f"Ingreso total generado: ${ingreso_total_medico}")
+    print(f"Total de consultas en esta fecha: {cont}")
 
 
-def ejecutar_demo():
+def rep_ing_med(consultas, cod_med):
+    ing_med = 0
+    num_atenc = 0
+
+    for cons in consultas:
+        if cons['Codigo Medico'] == cod_med:
+            ing_med += cons['Costo']
+            num_atenc += 1
+
+    print(f"\nREPORTE FINANCIERO DEL MÉDICO: {cod_med}")
+    print(f"Total de pacientes atendidos: {num_atenc}")
+    print(f"Ingreso total generado: ${ing_med}")
+
+
+def ejecuta_demo():
     medicos_prueba = [
         {"codigo": "M001", "cmp": "12345", "nombres": "Carlos", "apellidos": "Pérez", "especialidad": "Pediatría general"},
         {"codigo": "M002", "cmp": "67890", "nombres": "María", "apellidos": "Gómez", "especialidad": "Neonatología"},
@@ -174,16 +182,16 @@ def ejecutar_demo():
         {"Codigo": "C003", "Codigo Paciente": "P002", "Codigo Medico": "M002", "Fecha": "2026-06-06", "Motivo": "Tos", "Peso": 20.0, "Talla": 110.0, "Observaciones": "Bronquios", "Costo": 60.0},
     ]
 
-    listarPacientesGeneral(pacientes_prueba)
-    listarMedicosGeneral(medicos_prueba)
-    cantidadTotalConsultas(consultas_prueba)
-    ingresoTotalConsultas(consultas_prueba)
-    promedioCostoConsultas(consultas_prueba)
-    pacienteMayorConsultas(consultas_prueba, pacientes_prueba)
-    pacientesPorRangoEdad(pacientes_prueba)
-    reporteConsultasPorFecha(consultas_prueba, "2026-06-06")
-    reporteIngresosPorMedico(consultas_prueba, "M001")
+    listar_pacientes(pacientes_prueba)
+    listar_medicos(medicos_prueba)
+    total_consultas(consultas_prueba)
+    ingreso_total(consultas_prueba)
+    promedio_costo(consultas_prueba)
+    paciente_max(consultas_prueba, pacientes_prueba)
+    edad_rangos(pacientes_prueba)
+    rep_fecha(consultas_prueba, "2026-06-06")
+    rep_ing_med(consultas_prueba, "M001")
 
 
 if __name__ == "__main__":
-    ejecutar_demo()
+    ejecuta_demo()

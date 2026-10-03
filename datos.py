@@ -1,0 +1,4 @@
+responsables = []
+pacientes = []
+medicos = []
+consultas = []
