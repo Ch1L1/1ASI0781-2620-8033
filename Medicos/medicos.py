@@ -1,76 +1,76 @@
 
 medicos = []
 
-class Medico:
-    def __init__( 
-        self, codigo, CMP, nombre, 
-        apellido, areaEspecialidad
-    ):
-        self.codigo = codigo
-        self.CMP = CMP
-        self.nombre = nombre
-        self.apellido = apellido
-        self.areaEspecialidad = areaEspecialidad
+
+def listarMedico(medico):
+    print(
+        f"Codigo: {medico['codigo']}\n"
+        f"CMP: {medico['CMP']}\n"
+        f"Nombre: {medico['nombre']}\n"
+        f"Apellido: {medico['apellido']}\n"
+        f"Área o especialidad pediátrica: {medico['areaEspecialidad']}"
+    )
 
 
-    def listarMedico(self): # listar médico INDIVIDUAL
-                            # (todos sus datos, por eso está dentro de la clase)
-        print(
-            f"Codigo: {self.codigo}\nCMP:{self.CMP}"
-            f"\nNombre: {self.nombre}\nApellido: {self.apellido}"
-            f"\nÁrea o especialidad pediátrica: {self.areaEspecialidad}"
-        
-        )
-
-
-
-def buscarMedicoCodigo(): # FUERA DE LA CLASE: buscamos un
-                          # médico del TOTAL de la lista de medicos.
+def buscarMedicoCodigo():
     codigoIngresado = input("Coloque el código a buscar: ")
 
     encontrado = False
 
     for medico in medicos:
-        if medico.codigo == codigoIngresado:
+        if medico["codigo"] == codigoIngresado:
             print("\n¡Médico encontrado!")
-            medico.listarMedico()
+            listarMedico(medico)
             encontrado = True
 
     if encontrado == False:
         print("* Médico no encontrado...")
 
 
-
 def elegirEspecialidad():
-    while True:
+    opcionValida = False
+    opcion = ""
+
+    while opcionValida == False:
 
         print("Especialidades:")
         print("     1. Pediatría general")
         print("     2. Neonatología")
-        print("     3. Cardiología")
-        print("     4. Neumología")
-        print("     5. Gastroenterología")
+        print("     3. Cardiología pediátrica")
+        print("     4. Neumología pediátrica")
+        print("     5. Gastroenterología pediátrica")
 
         opcion = input("Seleccione una especialidad: ")
 
-        match opcion:
-            case "1":
-                return "Pediatría general"
-            case "2":
-                return "Neonatología"
-            case "3":
-                return "Cardiología"
-            case "4":
-                return "Neumología"
-            case "5":
-                return "Gastroenterología"
-            case _:
-                print("* Opción inválida. Intente nuevamente.\n")
+        if opcion == "1":
+            opcionValida = True
+        elif opcion == "2":
+            opcionValida = True
+        elif opcion == "3":
+            opcionValida = True
+        elif opcion == "4":
+            opcionValida = True
+        elif opcion == "5":
+            opcionValida = True
+        else:
+            print("* Opción inválida. Intente nuevamente.\n")
 
+    if opcion == "1":
+        return "Pediatría general"
+    elif opcion == "2":
+        return "Neonatología"
+    elif opcion == "3":
+        return "Cardiología pediátrica"
+    elif opcion == "4":
+        return "Neumología pediátrica"
+    else:
+        return "Gastroenterología pediátrica"
 
 
 def buscarMedicoEspecialidad():
+
     print("\nSelecciona una especialidad para buscar médicos: ")
+
     especialidadBuscada = elegirEspecialidad()
 
     encontrado = False
@@ -78,8 +78,8 @@ def buscarMedicoEspecialidad():
     print(f"\nMédicos de {especialidadBuscada}:\n")
 
     for medico in medicos:
-        if medico.areaEspecialidad == especialidadBuscada:
-            medico.listarMedico()
+        if medico["areaEspecialidad"] == especialidadBuscada:
+            listarMedico(medico)
             print()
             encontrado = True
 
@@ -87,13 +87,14 @@ def buscarMedicoEspecialidad():
         print("* No hay médicos registrados en esa especialidad.")
 
 
-
-def registrarMedico(): # FUERA DE LA CLASE: registramos un medico y
-                       # lo metemos en la lista medicos (con los otros)
+def registrarMedico():
 
     codigo = input("Ingrese código: ")
 
-    while True:
+    CMPValido = False
+
+    while CMPValido == False:
+
         CMP = int(input("Ingrese CMP: "))
 
         repetido = False
@@ -103,49 +104,86 @@ def registrarMedico(): # FUERA DE LA CLASE: registramos un medico y
 
         else:
             for medico in medicos:
-                if medico.CMP == CMP:
-                    repetido = True # cuando encuentra un CMP repetido
-            
+                if medico["CMP"] == CMP:
+                    repetido = True
+
             if repetido == True:
                 print("* Ese CMP ya está registrado. Ingrese otro.")
+            else:
+                CMPValido = True
 
-            if repetido == False:
-                break
-    
     nombre = input("Ingrese nombre: ")
     apellido = input("Ingrese apellido: ")
+
     areaEspecialidad = elegirEspecialidad()
 
-    nuevoMedico = Medico(
-        codigo,
-        CMP,
-        nombre,
-        apellido,
-        areaEspecialidad
-    )
+    nuevoMedico = {
+        "codigo": codigo,
+        "CMP": CMP,
+        "nombre": nombre,
+        "apellido": apellido,
+        "areaEspecialidad": areaEspecialidad
+    }
 
-    medicos.append(nuevoMedico)
+    medicos.append(nuevoMedico) # linea muy importante de nuevo porque
+                                # hace que todo nuevoMedico se añada
+                                # a la lista completa de medicos
 
     print("Médico registrado correctamente.\n")
 
 
-
 def mostrarListaMedicos():
+
     print("\nLista completa de médicos:\n")
+
     for medico in medicos:
-        medico.listarMedico()
+        listarMedico(medico)
         print()
 
+
+def modificarCMP(medico):
+
+    CMPValido = False
+
+    while CMPValido == False:
+
+        nuevoCMP = int(input("Ingrese nuevo CMP: "))
+
+        repetido = False
+
+        if nuevoCMP < 0:
+            print("* El CMP no puede ser negativo.")
+
+        else:
+            for otroMedico in medicos:
+
+                if (
+                    otroMedico["CMP"] == nuevoCMP
+                    and otroMedico["codigo"] != medico["codigo"]
+                ):
+                    repetido = True
+
+            if repetido == True:
+                print("* Ese CMP ya está registrado. Ingrese otro.")
+
+            else:
+                medico["CMP"] = nuevoCMP
+                CMPValido = True
+
+                print("\nMédico modificado correctamente.")
 
 
 def modificarMedico():
 
-    codigoIngresado = input("Ingrese el código del médico a modificar: ")
+    codigoIngresado = input(
+        "Ingrese el código del médico a modificar: "
+    )
 
     encontrado = False
 
     for medico in medicos:
-        if medico.codigo == codigoIngresado:
+
+        if medico["codigo"] == codigoIngresado:
 
             encontrado = True
 
@@ -157,73 +195,66 @@ def modificarMedico():
 
             opcion = input("Modificar: ")
 
-            match opcion:
-                case "1":
-                    medico.nombre = input("Ingrese nuevo nombre: ")
-                    print("\nMédico modificado correctamente.")
-                case "2":
-                    medico.apellido = input("Ingrese nuevo apellido: ")
-                    print("\nMédico modificado correctamente.")
-                case "3":
-                    medico.areaEspecialidad = elegirEspecialidad()
-                    print("\nMédico modificado correctamente.")
-                case "4":
-                    while True:
-                        nuevoCMP = int(input("Ingrese nuevo CMP: "))
+            if opcion == "1":
 
-                        repetido = False
+                medico["nombre"] = input(
+                    "Ingrese nuevo nombre: "
+                )
 
-                        if nuevoCMP < 0:
-                            print("* El CMP no puede ser negativo.")
+                print("\nMédico modificado correctamente.")
 
-                        else:
-                            for otroMedico in medicos:
-                                # si otro médico tiene ese mismo CMP
-                                # *AND* no es el médico que estamos modificando
-                                if (
-                                    otroMedico.CMP == nuevoCMP
-                                    and otroMedico.codigo != medico.codigo
-                                ):
-                                    repetido = True
+            elif opcion == "2":
 
-                            if repetido == True:
-                                print("* Ese CMP ya está registrado. Ingrese otro.")
+                medico["apellido"] = input(
+                    "Ingrese nuevo apellido: "
+                )
 
-                            if repetido == False:
-                                medico.CMP = nuevoCMP
-                                print("\nMédico modificado correctamente.")
-                                break
+                print("\nMédico modificado correctamente.")
 
-                case _:
-                    print("* Opción inválida.")
+            elif opcion == "3":
 
+                medico["areaEspecialidad"] = elegirEspecialidad()
+
+                print("\nMédico modificado correctamente.")
+
+            elif opcion == "4":
+
+                modificarCMP(medico)
+
+            else:
+                print("* Opción inválida.")
 
     if encontrado == False:
         print("* Médico no encontrado.\n")
 
+######################
+# programa principal #
+######################
 
+numeroValido = False
 
-# pedir el numero de medicos a registrar.. si desea
-# buscar médicos y si desea modificar informacion de
-# algun médico mediante su código
-
-while True:
+while numeroValido == False:
 
     numeroMedicosRegistrar = int(
         input("Ingrese el numero de medicos a registrar: ")
     )
 
     if numeroMedicosRegistrar > 0:
-        break
+        numeroValido = True
+    else:
+        print("* Debes ingresar un número mayor que 0.\n")
 
-    print("* Debes ingresar un número mayor que 0.\n")
 
 for numero in range(numeroMedicosRegistrar):
     registrarMedico()
 
+
 mostrarListaMedicos()
 
-buscar = input("¿Desea buscar médicos? (1 = Sí, 2 = No): ")
+
+buscar = input(
+    "¿Desea buscar médicos? (1 = Sí, 2 = No): "
+)
 
 if buscar == "1":
 
@@ -231,20 +262,22 @@ if buscar == "1":
     print("     1. Código")
     print("     2. Especialidad")
 
-    buscar = input("Seleccione una opción: ")
+    opcionBuscar = input("Seleccione una opción: ")
 
-    match buscar:
-        case "1":
-            buscarMedicoCodigo()
-        case "2":
-            buscarMedicoEspecialidad()
+    if opcionBuscar == "1":
+        buscarMedicoCodigo()
 
-        case _: # esto por si la respuesta no está en los CASE
-            print("* Opción inválida.")
+    elif opcionBuscar == "2":
+        buscarMedicoEspecialidad()
+
+    else:
+        print("* Opción inválida.")
+
 
 modificar = input(
-    "¿Desea modificar la información"
-    " de algún médico? (1 = Sí, 2 = No): "
+    "¿Desea modificar la información "
+    "de algún médico? (1 = Sí, 2 = No): "
 )
+
 if modificar == "1":
     modificarMedico()
