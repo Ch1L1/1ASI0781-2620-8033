@@ -24,6 +24,18 @@ def codigo_duplicado(lista, codigo):
     return False
 
 
+def formatear_fecha(dia, mes, anio):
+    dia_txt = str(dia)
+    mes_txt = str(mes)
+
+    if len(dia_txt) == 1:
+        dia_txt = "0" + dia_txt
+    if len(mes_txt) == 1:
+        mes_txt = "0" + mes_txt
+
+    return dia_txt + "/" + mes_txt + "/" + str(anio)
+
+
 # ---------- FUNCIONES PRINCIPALES ----------
 def muestra_resp(r):
     print("Código     :", r["codigo"])
@@ -31,13 +43,13 @@ def muestra_resp(r):
     print("Nombre     :", r["nombres"], r["apellidos"])
     print("Teléfono   :", r["telefono"])
     print("Parentesco :", r["parentesco"])
-    print("-" * 35)
+    print("-----------------------------------")
 
 
 def reg_resp(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("     REGISTRAR RESPONSABLE")
-    print("=" * 35)
+    print("===================================")
 
     codigo = input("Código: ")
     if texto_vacio(codigo):
@@ -81,9 +93,9 @@ def reg_resp(lista):
 
 
 def lista_resp_reg(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("     LISTA DE RESPONSABLES")
-    print("=" * 35)
+    print("===================================")
 
     if len(lista) == 0:
         print("No hay responsables registrados.")
@@ -109,9 +121,9 @@ def busca_resp_cod(lista, codigo):
 
 
 def cambia_tel(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("       MODIFICAR TELÉFONO")
-    print("=" * 35)
+    print("===================================")
 
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista, dni)
@@ -126,9 +138,9 @@ def cambia_tel(lista):
 
 
 def pacientes_resp(lista_resp, lista_pac):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("   PACIENTES DEL RESPONSABLE")
-    print("=" * 35)
+    print("===================================")
 
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista_resp, dni)
@@ -152,9 +164,9 @@ def pacientes_resp(lista_resp, lista_pac):
 def menu_resp(lista_resp, lista_pac):
     opcion = ""
     while opcion != "6":
-        print("\n" + "=" * 35)
+        print("\n===================================")
         print("     GESTIÓN DE RESPONSABLES")
-        print("=" * 35)
+        print("===================================")
         print("1. Registrar responsable")
         print("2. Listar responsables")
         print("3. Buscar responsable por DNI")
@@ -439,11 +451,11 @@ def listar_pacientes_detalle(fecha_act):
         return
 
     print(f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} {'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}")
-    print("-" * 75)
+    print("---------------------------------------------------------------------------")
     for p in pacientes:
         anos, meses, dias = calcular_edad(p["f_nac"], fecha_act)
         dia_n, mes_n, anio_n = p["f_nac"]
-        fecha_txt = f"{dia_n:02d}/{mes_n:02d}/{anio_n}"
+        fecha_txt = formatear_fecha(dia_n, mes_n, anio_n)
         nom_comp = f"{p['nombres']} {p['apellidos']}"
         print(f"{p['codigo']:<8} {p['dni']:<10} {nom_comp:<25} {fecha_txt:<12} {p['sexo']:<5} {anos}a {meses}m {dias}d")
 
@@ -480,7 +492,7 @@ def buscar_paciente(fecha_act):
         print("DATOS DEL PACIENTE")
         print(f" - Codigo: {p['codigo']} | DNI: {p['dni']}")
         print(f" - Nombre Completo: {p['nombres']} {p['apellidos']}")
-        print(f" - Fecha de Nacimiento: {dia_n:02d}/{mes_n:02d}/{anio_n}")
+        print(f" - Fecha de Nacimiento: {formatear_fecha(dia_n, mes_n, anio_n)}")
         print(f" - Sexo: {p['sexo']}")
         print(f" - Edad Exacta: {anos} anos, {meses} meses y {dias} dias")
         print("-------------------")
@@ -559,7 +571,7 @@ def busca_medico_cod():
             found = True
 
     if not found:
-        print("* Médico no encontrado...")
+        print("Médico no encontrado...")
 
 
 def elige_especial():
@@ -579,7 +591,7 @@ def elige_especial():
         if opcion in ["1", "2", "3", "4", "5"]:
             es_valida = True
         else:
-            print("* Opción inválida. Intente nuevamente.\n")
+            print("Opción inválida. Intente nuevamente.\n")
 
     if opcion == "1":
         return "Pediatría general"
@@ -608,7 +620,7 @@ def busca_medico_esp():
             found = True
 
     if not found:
-        print("* No hay médicos registrados en esa especialidad.")
+        print("No hay médicos registrados en esa especialidad.")
 
 
 def registra_medico():
@@ -624,14 +636,14 @@ def registra_medico():
         rep = False
 
         if cmp < 0:
-            print("* El CMP no puede ser negativo.")
+            print("El CMP no puede ser negativo.")
         else:
             for medico in medicos:
                 if medico["cmp"] == cmp:
                     rep = True
 
             if rep:
-                print("* Ese CMP ya está registrado. Ingrese otro.")
+                print("Ese CMP ya está registrado. Ingrese otro.")
             else:
                 cmp_valido = True
 
@@ -668,14 +680,14 @@ def modifica_cmp(medico):
         rep = False
 
         if nuevo_cmp < 0:
-            print("* El CMP no puede ser negativo.")
+            print("El CMP no puede ser negativo.")
         else:
             for otro in medicos:
                 if otro["cmp"] == nuevo_cmp and otro["codigo"] != medico["codigo"]:
                     rep = True
 
             if rep:
-                print("* Ese CMP ya está registrado. Ingrese otro.")
+                print("Ese CMP ya está registrado. Ingrese otro.")
             else:
                 medico["cmp"] = nuevo_cmp
                 cmp_valido = True
@@ -709,10 +721,10 @@ def modifica_medico():
             elif opcion == "4":
                 modifica_cmp(medico)
             else:
-                print("* Opción inválida.")
+                print("Opción inválida.")
 
     if not found:
-        print("* Médico no encontrado.\n")
+        print("Médico no encontrado.\n")
 
 
 def menu_medicos():
@@ -739,7 +751,7 @@ def menu_medicos():
         elif opcion == "6":
             break
         else:
-            print("* Opción inválida.")
+            print("Opción inválida.")
 
 
 # CONSULTAS
@@ -749,7 +761,7 @@ def busca_medico(medicos_lista, codigo_medico):
             print("\n¡Médico encontrado!")
             return True
 
-    print("* Médico no encontrado...")
+    print("Médico no encontrado...")
     return False
 
 
@@ -759,7 +771,7 @@ def busca_paciente(pacientes_lista, codigo_paciente):
             print("\n¡Paciente encontrado!")
             return True
 
-    print("* Paciente no encontrado...")
+    print("Paciente no encontrado...")
     return False
 
 
@@ -832,7 +844,7 @@ def listar_pacientes(pacientes):
             fecha_txt = p["fecha_nacimiento"]
         else:
             dia, mes, anio = p["f_nac"]
-            fecha_txt = f"{dia:02d}/{mes:02d}/{anio}"
+            fecha_txt = formatear_fecha(dia, mes, anio)
         print(
             f"Código: {p['codigo']} | DNI: {p['dni']} | Nombre: {p['nombres']} {p['apellidos']} | "
             f"Nacimiento: {fecha_txt}"

@@ -22,7 +22,7 @@ def busca_medico_cod():
             found = True
 
     if not found:
-        print("* Médico no encontrado...")
+        print("Médico no encontrado...")
 
 
 def elige_especial():
@@ -42,7 +42,7 @@ def elige_especial():
         if opcion in ["1", "2", "3", "4", "5"]:
             es_valida = True
         else:
-            print("* Opción inválida. Intente nuevamente.\n")
+            print("Opción inválida. Intente nuevamente.\n")
 
     if opcion == "1":
         return "Pediatría general"
@@ -71,7 +71,7 @@ def busca_medico_esp():
             found = True
 
     if not found:
-        print("* No hay médicos registrados en esa especialidad.")
+        print("No hay médicos registrados en esa especialidad.")
 
 
 def registra_medico():
@@ -87,14 +87,14 @@ def registra_medico():
         rep = False
 
         if cmp < 0:
-            print("* El CMP no puede ser negativo.")
+            print("El CMP no puede ser negativo.")
         else:
             for medico in medicos:
                 if medico["cmp"] == cmp:
                     rep = True
 
             if rep:
-                print("* Ese CMP ya está registrado. Ingrese otro.")
+                print("Ese CMP ya está registrado. Ingrese otro.")
             else:
                 cmp_valido = True
 
@@ -131,14 +131,14 @@ def modifica_cmp(medico):
         rep = False
 
         if nuevo_cmp < 0:
-            print("* El CMP no puede ser negativo.")
+            print("El CMP no puede ser negativo.")
         else:
             for otro in medicos:
                 if otro["cmp"] == nuevo_cmp and otro["codigo"] != medico["codigo"]:
                     rep = True
 
             if rep:
-                print("* Ese CMP ya está registrado. Ingrese otro.")
+                print("Ese CMP ya está registrado. Ingrese otro.")
             else:
                 medico["cmp"] = nuevo_cmp
                 cmp_valido = True
@@ -172,10 +172,10 @@ def modifica_medico():
             elif opcion == "4":
                 modifica_cmp(medico)
             else:
-                print("* Opción inválida.")
+                print("Opción inválida.")
 
     if not found:
-        print("* Médico no encontrado.\n")
+        print("Médico no encontrado.\n")
 
 
 def menu_medicos():
@@ -202,4 +202,4 @@ def menu_medicos():
         elif opcion == "6":
             break
         else:
-            print("* Opción inválida.")
+            print("Opción inválida.")

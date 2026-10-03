@@ -4,7 +4,7 @@ def busca_medico(medicos_lista, codigo_medico):
             print("\n¡Médico encontrado!")
             return True
 
-    print("* Médico no encontrado...")
+    print("Médico no encontrado...")
     return False
 
 
@@ -14,7 +14,7 @@ def busca_paciente(pacientes_lista, codigo_paciente):
             print("\n¡Paciente encontrado!")
             return True
 
-    print("* Paciente no encontrado...")
+    print("Paciente no encontrado...")
     return False
 
 

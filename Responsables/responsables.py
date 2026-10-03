@@ -26,13 +26,13 @@ def muestra_resp(r):
     print("Nombre     :", r["nombres"], r["apellidos"])
     print("Teléfono   :", r["telefono"])
     print("Parentesco :", r["parentesco"])
-    print("-" * 35)
+    print("-----------------------------------")
 
 
 def reg_resp(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("     REGISTRAR RESPONSABLE")
-    print("=" * 35)
+    print("===================================")
 
     codigo = input("Código: ")
     if texto_vacio(codigo):
@@ -76,9 +76,9 @@ def reg_resp(lista):
 
 
 def lista_resp_reg(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("     LISTA DE RESPONSABLES")
-    print("=" * 35)
+    print("===================================")
 
     if len(lista) == 0:
         print("No hay responsables registrados.")
@@ -104,9 +104,9 @@ def busca_resp_cod(lista, codigo):
 
 
 def cambia_tel(lista):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("       MODIFICAR TELÉFONO")
-    print("=" * 35)
+    print("===================================")
 
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista, dni)
@@ -121,9 +121,9 @@ def cambia_tel(lista):
 
 
 def pacientes_resp(lista_resp, lista_pac):
-    print("\n" + "=" * 35)
+    print("\n===================================")
     print("   PACIENTES DEL RESPONSABLE")
-    print("=" * 35)
+    print("===================================")
 
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista_resp, dni)
@@ -147,9 +147,9 @@ def pacientes_resp(lista_resp, lista_pac):
 def menu_resp(lista_resp, lista_pac):
     opcion = ""
     while opcion != "6":
-        print("\n" + "=" * 35)
+        print("\n===================================")
         print("     GESTIÓN DE RESPONSABLES")
-        print("=" * 35)
+        print("===================================")
         print("1. Registrar responsable")
         print("2. Listar responsables")
         print("3. Buscar responsable por DNI")

@@ -1,3 +1,15 @@
+def formatear_fecha(dia, mes, anio):
+    dia_txt = str(dia)
+    mes_txt = str(mes)
+
+    if len(dia_txt) == 1:
+        dia_txt = "0" + dia_txt
+    if len(mes_txt) == 1:
+        mes_txt = "0" + mes_txt
+
+    return dia_txt + "/" + mes_txt + "/" + str(anio)
+
+
 def listar_pacientes(pacientes):
     print("\nLISTADO GENERAL DE PACIENTES:\n")
     for p in pacientes:
@@ -6,7 +18,7 @@ def listar_pacientes(pacientes):
             fecha_txt = p["fecha_nacimiento"]
         else:
             dia, mes, anio = fecha_nac
-            fecha_txt = f"{dia:02d}/{mes:02d}/{anio}"
+            fecha_txt = formatear_fecha(dia, mes, anio)
         print(
             f"Código: {p['codigo']} | DNI: {p['dni']} | Nombre: {p['nombres']} {p['apellidos']} | "
             f"Nacimiento: {fecha_txt}"

@@ -1,5 +1,18 @@
 from datos import pacientes, responsables
 
+
+def formatear_fecha(dia, mes, anio):
+    dia_txt = str(dia)
+    mes_txt = str(mes)
+
+    if len(dia_txt) == 1:
+        dia_txt = "0" + dia_txt
+    if len(mes_txt) == 1:
+        mes_txt = "0" + mes_txt
+
+    return dia_txt + "/" + mes_txt + "/" + str(anio)
+
+
 def es_bisiesto(anio):
     return (anio % 4 == 0 and anio % 100 != 0) or (anio % 400 == 0)
 
@@ -254,11 +267,11 @@ def listar_pacientes(fecha_act):
         return
 
     print(f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} {'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}")
-    print("-" * 75)
+    print("---------------------------------------------------------------------------")
     for p in pacientes:
         anos, meses, dias = calcular_edad(p["f_nac"], fecha_act)
         dia_n, mes_n, anio_n = p["f_nac"]
-        fecha_txt = f"{dia_n:02d}/{mes_n:02d}/{anio_n}"
+        fecha_txt = formatear_fecha(dia_n, mes_n, anio_n)
         nom_comp = f"{p['nombres']} {p['apellidos']}"
         print(f"{p['codigo']:<8} {p['dni']:<10} {nom_comp:<25} {fecha_txt:<12} {p['sexo']:<5} {anos}a {meses}m {dias}d")
 
@@ -295,7 +308,7 @@ def buscar_paciente(fecha_act):
         print("DATOS DEL PACIENTE")
         print(f" - Codigo: {p['codigo']} | DNI: {p['dni']}")
         print(f" - Nombre Completo: {p['nombres']} {p['apellidos']}")
-        print(f" - Fecha de Nacimiento: {dia_n:02d}/{mes_n:02d}/{anio_n}")
+        print(f" - Fecha de Nacimiento: {formatear_fecha(dia_n, mes_n, anio_n)}")
         print(f" - Sexo: {p['sexo']}")
         print(f" - Edad Exacta: {anos} anos, {meses} meses y {dias} dias")
         print("-------------------")
