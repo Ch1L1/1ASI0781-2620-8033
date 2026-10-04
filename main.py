@@ -1,7 +1,9 @@
+
 responsables = []
 pacientes = []
 medicos = []
 consultas = []
+fecha_actual = (6, 10, 2026)
 
 # RESPONSABLES
 
@@ -110,14 +112,14 @@ def busca_resp_dni(lista, dni):
     for r in lista:
         if r["dni"] == dni:
             return r
-    return None
+    return False
 
 
 def busca_resp_cod(lista, codigo):
     for r in lista:
         if r["codigo"] == codigo:
             return r
-    return None
+    return False
 
 
 def cambia_tel(lista):
@@ -128,7 +130,7 @@ def cambia_tel(lista):
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista, dni)
 
-    if r is None:
+    if r == False:
         print("[ERROR] No existe un responsable con ese DNI.")
         return
 
@@ -145,14 +147,14 @@ def pacientes_resp(lista_resp, lista_pac):
     dni = input("DNI del responsable: ")
     r = busca_resp_dni(lista_resp, dni)
 
-    if r is None:
+    if r == False:
         print("[ERROR] No existe un responsable con ese DNI.")
         return
 
     print("Responsable:", r["nombres"], r["apellidos"])
     cont = 0
     for p in lista_pac:
-        if p["codigo_responsable"] == r["codigo"]:
+        if p["cod_resp"] == r["codigo"]:
             print("  -", p["nombres"], p["apellidos"])
             cont = cont + 1
 
@@ -182,7 +184,7 @@ def menu_resp(lista_resp, lista_pac):
         elif opcion == "3":
             dni = input("DNI a buscar: ")
             r = busca_resp_dni(lista_resp, dni)
-            if r is None:
+            if r == False:
                 print("[ERROR] No se encontró el responsable.")
             else:
                 muestra_resp(r)
@@ -216,20 +218,20 @@ def dias_mes(mes, anio):
 
 def validar_fecha(fecha_str):
     if len(fecha_str) != 10 or fecha_str[2] != "/" or fecha_str[5] != "/":
-        return None
+        return False
 
     try:
         dia = int(fecha_str[:2])
         mes = int(fecha_str[3:5])
         anio = int(fecha_str[6:])
     except ValueError:
-        return None
+        return False
 
     if anio < 1900 or anio > 2026 or mes < 1 or mes > 12:
-        return None
+        return False
 
     if dia < 1 or dia > dias_mes(mes, anio):
-        return None
+        return False
 
     return (dia, mes, anio)
 
@@ -281,94 +283,7 @@ def formato_resp(resp):
     )
 
 
-def cargar_demo():
-    resp01_existe = False
-    for resp in responsables:
-        if resp["codigo"] == "RESP01":
-            resp01_existe = True
-            break
-
-    if not resp01_existe:
-        responsables.append(
-            {
-                "codigo": "RESP01",
-                "dni": "09876543",
-                "nombres": "Carlos",
-                "apellidos": "Mendoza Rios",
-                "telefono": "987654321",
-                "parentesco": "Padre",
-            }
-        )
-    resp02_existe = False
-    for resp in responsables:
-        if resp["codigo"] == "RESP02":
-            resp02_existe = True
-            break
-
-    if not resp02_existe:
-        responsables.append(
-            {
-                "codigo": "RESP02",
-                "dni": "11223344",
-                "nombres": "Maria",
-                "apellidos": "Gomez Perales",
-                "telefono": "912345678",
-                "parentesco": "Madre",
-            }
-        )
-
-
-def reg_responsable():
-    print("\n--- REGISTRO DE RESPONSABLE ---")
-    cod = input("Codigo del responsable: ")
-    cod_existe = False
-    for resp in responsables:
-        if resp["codigo"] == cod:
-            cod_existe = True
-            break
-
-    if cod_existe:
-        print("ERROR: Ya existe un responsable registrado con ese codigo.")
-        return
-
-    while True:
-        dni = input("DNI (8 digitos): ")
-        if len(dni) == 8 and dni.isdigit():
-            dni_existe = False
-            for resp in responsables:
-                if resp["dni"] == dni:
-                    dni_existe = True
-                    break
-
-            if dni_existe:
-                print("ERROR: Ya existe un responsable con ese DNI.")
-                continue
-            break
-        print("ERROR: El DNI debe ser numerico y tener exactamente 8 digitos.")
-
-    nom = input("Nombres: ")
-    ape = input("Apellidos: ")
-
-    while True:
-        tel = input("Telefono (9 digitos, inicia con 9): ")
-        if len(tel) == 9 and tel.isdigit() and tel[0] == "9":
-            break
-        print("ERROR: El telefono debe tener 9 digitos, ser numerico y comenzar con 9.")
-
-    par = input("Parentesco (Padre, Madre, Tutor, etc.): ")
-
-    responsables.append({
-        "codigo": cod,
-        "dni": dni,
-        "nombres": nom,
-        "apellidos": ape,
-        "telefono": tel,
-        "parentesco": par,
-    })
-    print(f"Responsable '{nom} {ape}' registrado con exito.")
-
-
-def reg_paciente(fecha_act):
+def reg_paciente(fecha_actual):
     print("\n--- REGISTRO DE NUEVO PACIENTE ---")
 
     cod_resp = input("Ingrese el Codigo del Responsable: ")
@@ -394,8 +309,10 @@ def reg_paciente(fecha_act):
         print("ERROR: Ya existe un paciente registrado con ese codigo.")
         return
 
-    while True:
+    dni_valido = False
+    while dni_valido == False:
         dni = input("DNI del Paciente (8 digitos): ")
+
         if len(dni) == 8 and dni.isdigit():
             dni_existe = False
             for pac in pacientes:
@@ -405,12 +322,20 @@ def reg_paciente(fecha_act):
 
             if dni_existe:
                 print("ERROR: Ya existe un paciente con ese DNI.")
-                continue
-            break
-        print("ERROR: El DNI debe tener exactamente 8 digitos numericos.")
+            else:
+                dni_valido = True
+        else:
+            print("ERROR: El DNI debe tener exactamente 8 digitos numericos.")
 
     nom = input("Nombres: ")
+    if nom == "":
+        print("Los nombres no pueden estar vacíos.")
+        return
+
     ape = input("Apellidos: ")
+    if ape == "":
+        print("Los apellidos no pueden estar vacíos.")
+        return
 
     while True:
         sexo = input("Sexo (M/F): ")
@@ -418,25 +343,28 @@ def reg_paciente(fecha_act):
             break
         print("Opcion invalida. Ingrese 'M' o 'F'.")
 
-    while True:
+    fecha_valida = False
+    while fecha_valida == False:
         fecha_str = input("Fecha de nacimiento (DD/MM/AAAA): ")
         fecha_nac = validar_fecha(fecha_str)
 
-        if fecha_nac is None:
+        if fecha_nac == False:
             print(
                 "Formato de fecha incorrecto o dia/mes no valido. "
                 "Use DD/MM/AAAA (ej: 15/08/2018)."
             )
-            continue
-
-        if es_futura(fecha_nac, fecha_act):
-            print(
-                "ERROR: La fecha de nacimiento no puede ser posterior "
-                "a la fecha actual del sistema."
-            )
-            continue
-
-        break
+        else:
+            if es_futura(fecha_nac, fecha_actual):
+                print(
+                    "ERROR: La fecha de nacimiento no puede ser posterior "
+                    "a la fecha actual del sistema."
+                )
+            else:
+                edad, meses, dias = calcular_edad(fecha_nac, fecha_actual)
+                if edad > 17:
+                    print("ERROR: El paciente debe tener 17 años o menos.")
+                else:
+                    fecha_valida = True
 
     pacientes.append({
         "codigo": cod,
@@ -450,7 +378,7 @@ def reg_paciente(fecha_act):
     print(f"Paciente '{nom} {ape}' registrado correctamente.")
 
 
-def listar_pac_det(fecha_act):
+def listar_pac_det(fecha_actual):
     print("\n--- LISTADO GENERAL DE PACIENTES ---")
     if not pacientes:
         print("No hay pacientes registrados en el sistema.")
@@ -462,7 +390,7 @@ def listar_pac_det(fecha_act):
     )
     print("---------------------------------------------------------------------------")
     for p in pacientes:
-        anos, meses, dias = calcular_edad(p["f_nac"], fecha_act)
+        anos, meses, dias = calcular_edad(p["f_nac"], fecha_actual)
         dia_n, mes_n, anio_n = p["f_nac"]
         fecha_txt = formatear_fecha(dia_n, mes_n, anio_n)
         nom_comp = f"{p['nombres']} {p['apellidos']}"
@@ -472,7 +400,7 @@ def listar_pac_det(fecha_act):
         )
 
 
-def buscar_paciente(fecha_act):
+def buscar_paciente(fecha_actual):
     print("\n--- BUSQUEDA DE PACIENTE ---")
     if not pacientes:
         print("No hay pacientes registrados.")
@@ -492,8 +420,8 @@ def buscar_paciente(fecha_act):
 
     print(f"\nSe encontraron {len(hallados)} coincidencia(s):")
     for p in hallados:
-        anos, meses, dias = calcular_edad(p["f_nac"], fecha_act)
-        resp = None
+        anos, meses, dias = calcular_edad(p["f_nac"], fecha_actual)
+        resp = False
         for item in responsables:
             if item["codigo"] == p["cod_resp"]:
                 resp = item
@@ -526,9 +454,6 @@ def listar_resp():
 
 
 def menu():
-    cargar_demo()
-    fecha_act = (2, 10, 2026)
-
     while True:
         print("\n==========================================")
         print("    SISTEMA DE GESTION CLINICA PEDIATRICA ")
@@ -543,13 +468,13 @@ def menu():
         op = input("Seleccione una opcion (1-6): ")
 
         if op == "1":
-            reg_paciente(fecha_act)
+            reg_paciente(fecha_actual)
         elif op == "2":
-            reg_responsable()
+            reg_resp(responsables)
         elif op == "3":
-            listar_pac_det(fecha_act)
+            listar_pac_det(fecha_actual)
         elif op == "4":
-            buscar_paciente(fecha_act)
+            buscar_paciente(fecha_actual)
         elif op == "5":
             listar_resp()
         elif op == "6":
@@ -637,30 +562,50 @@ def busca_medico_esp():
 
 def registra_medico():
     codigo = input("Ingrese código (Enter para terminar): ")
-    if not codigo:
+    if codigo == "":
         print("Registro de médicos finalizado.\n")
+        return False
+
+    if codigo_duplicado(medicos, codigo):
+        print("Ya existe un médico con ese código.")
         return False
 
     cmp_valido = False
 
-    while not cmp_valido:
-        cmp = int(input("Ingrese CMP: "))
-        rep = False
+    while cmp_valido == False:
+        numero_valido = True
 
-        if cmp < 0:
-            print("El CMP no puede ser negativo.")
-        else:
-            for medico in medicos:
-                if medico["cmp"] == cmp:
-                    rep = True
+        try:
+            cmp = int(input("Ingrese CMP: "))
+        except ValueError:
+            print("El CMP debe ser un número entero.")
+            numero_valido = False
 
-            if rep:
-                print("Ese CMP ya está registrado. Ingrese otro.")
+        if numero_valido == True:
+            rep = False
+
+            if cmp < 0:
+                print("El CMP no puede ser negativo.")
             else:
-                cmp_valido = True
+                for medico in medicos:
+                    if medico["cmp"] == cmp:
+                        rep = True
+
+                if rep:
+                    print("Ese CMP ya está registrado. Ingrese otro.")
+                else:
+                    cmp_valido = True
 
     nombres = input("Ingrese nombre: ")
+    if nombres == "":
+        print("El nombre no puede estar vacío.")
+        return False
+
     apellidos = input("Ingrese apellido: ")
+    if apellidos == "":
+        print("El apellido no puede estar vacío.")
+        return False
+
     area_esp = elige_especial()
 
     nuevo_medico = {
@@ -687,23 +632,31 @@ def muestra_medicos():
 def modifica_cmp(medico):
     cmp_valido = False
 
-    while not cmp_valido:
-        nuevo_cmp = int(input("Ingrese nuevo CMP: "))
-        rep = False
+    while cmp_valido == False:
+        numero_valido = True
 
-        if nuevo_cmp < 0:
-            print("El CMP no puede ser negativo.")
-        else:
-            for otro in medicos:
-                if otro["cmp"] == nuevo_cmp and otro["codigo"] != medico["codigo"]:
-                    rep = True
+        try:
+            nuevo_cmp = int(input("Ingrese nuevo CMP: "))
+        except ValueError:
+            print("El CMP debe ser un número entero.")
+            numero_valido = False
 
-            if rep:
-                print("Ese CMP ya está registrado. Ingrese otro.")
+        if numero_valido == True:
+            rep = False
+
+            if nuevo_cmp < 0:
+                print("El CMP no puede ser negativo.")
             else:
-                medico["cmp"] = nuevo_cmp
-                cmp_valido = True
-                print("\nMédico modificado correctamente.")
+                for otro in medicos:
+                    if otro["cmp"] == nuevo_cmp and otro["codigo"] != medico["codigo"]:
+                        rep = True
+
+                if rep:
+                    print("Ese CMP ya está registrado. Ingrese otro.")
+                else:
+                    medico["cmp"] = nuevo_cmp
+                    cmp_valido = True
+                    print("\nMédico modificado correctamente.")
 
 
 def modifica_medico():
@@ -722,11 +675,19 @@ def modifica_medico():
             opcion = input("Modificar: ")
 
             if opcion == "1":
-                medico["nombres"] = input("Ingrese nuevo nombre: ")
-                print("\nMédico modificado correctamente.")
+                nuevo_nombre = input("Ingrese nuevo nombre: ")
+                if nuevo_nombre == "":
+                    print("El nombre no puede estar vacío.")
+                else:
+                    medico["nombres"] = nuevo_nombre
+                    print("\nMédico modificado correctamente.")
             elif opcion == "2":
-                medico["apellidos"] = input("Ingrese nuevo apellido: ")
-                print("\nMédico modificado correctamente.")
+                nuevo_apellido = input("Ingrese nuevo apellido: ")
+                if nuevo_apellido == "":
+                    print("El apellido no puede estar vacío.")
+                else:
+                    medico["apellidos"] = nuevo_apellido
+                    print("\nMédico modificado correctamente.")
             elif opcion == "3":
                 medico["especialidad"] = elige_especial()
                 print("\nMédico modificado correctamente.")
@@ -812,25 +773,72 @@ def ingresa_consulta(lista_consultas, pacientes_lista, medicos_lista):
         print("No se puede registrar: El médico no existe.")
         return
 
-    fecha = input("Ingrese fecha de la consulta: ")
+    fecha_valida = False
+    while fecha_valida == False:
+        fecha_txt = input("Ingrese fecha de la consulta (DD/MM/AAAA): ")
+        fecha_cons = validar_fecha(fecha_txt)
+
+        if fecha_cons == False:
+            print("ERROR: Ingrese una fecha válida en formato DD/MM/AAAA.")
+        else:
+            if es_futura(fecha_cons, fecha_actual):
+                print("ERROR: La fecha de consulta no puede ser futura.")
+            else:
+                dia, mes, anio = fecha_cons
+                fecha = formatear_fecha(dia, mes, anio)
+                fecha_valida = True
+
     motivo = input("Ingrese el motivo de la consulta: ")
 
-    peso = float(input("Ingrese el peso del paciente: "))
-    if peso <= 0:
-        print("ERROR, el peso ingresado no es válido")
-        return
+    peso_valido = False
+    while peso_valido == False:
+        numero_valido = True
 
-    talla = float(input("Ingrese la talla del paciente: "))
-    if talla <= 0:
-        print("ERROR, la talla ingresada no es válida")
-        return
+        try:
+            peso = float(input("Ingrese el peso del paciente: "))
+        except ValueError:
+            print("ERROR: El peso debe ser un número.")
+            numero_valido = False
+
+        if numero_valido == True:
+            if peso <= 0:
+                print("ERROR: El peso debe ser mayor a 0.")
+            else:
+                peso_valido = True
+
+    talla_valida = False
+    while talla_valida == False:
+        numero_valido = True
+
+        try:
+            talla = float(input("Ingrese la talla del paciente: "))
+        except ValueError:
+            print("ERROR: La talla debe ser un número.")
+            numero_valido = False
+
+        if numero_valido == True:
+            if talla <= 0:
+                print("ERROR: La talla debe ser mayor a 0.")
+            else:
+                talla_valida = True
 
     observaciones = input("Ingrese observaciones requeridas: ")
 
-    costo = float(input("Ingrese el costo de la consulta: "))
-    if costo <= 0:
-        print("ERROR, el costo de la consulta debe ser mayor a 0")
-        return
+    costo_valido = False
+    while costo_valido == False:
+        numero_valido = True
+
+        try:
+            costo = float(input("Ingrese el costo de la consulta: "))
+        except ValueError:
+            print("ERROR: El costo debe ser un número.")
+            numero_valido = False
+
+        if numero_valido == True:
+            if costo <= 0:
+                print("ERROR: El costo debe ser mayor a 0.")
+            else:
+                costo_valido = True
 
     nueva_consulta = {
         "Codigo": codigo,
@@ -898,7 +906,7 @@ def hist_paciente(consultas, cod_pac):
         if cons['Codigo Paciente'] == cod_pac:
             print(
                 f"Fecha: {cons['Fecha']} | Motivo: {cons['Motivo']} | "
-                f"Costo: ${cons['Costo']} | Peso: {cons['Peso']}kg"
+                f"Costo: S/{cons['Costo']} | Peso: {cons['Peso']}kg"
             )
             cont += 1
 
@@ -929,20 +937,20 @@ def ingreso_total(consultas):
     total = 0
     for cons in consultas:
         total += cons['Costo']
-    print(f"\nIngreso total generado por consultas: ${total}")
+    print(f"\nIngreso total generado por consultas: S/{total}")
 
 
 def promedio_costo(consultas):
     total_cons = len(consultas)
     if total_cons == 0:
-        print("\nPromedio del costo de las consultas: $0")
+        print("\nPromedio del costo de las consultas: S/0")
         return
 
     suma = 0
     for cons in consultas:
         suma += cons['Costo']
     prom = suma / total_cons
-    print(f"\nPromedio del costo de las consultas: ${prom}")
+    print(f"\nPromedio del costo de las consultas: S/{prom}")
 
 
 def paciente_max(consultas, pacientes):
@@ -975,13 +983,8 @@ def edad_rangos(pacientes):
     rango_3_5 = 0
     rango_6_11 = 0
     rango_12_17 = 0
-
     for pac in pacientes:
-        if "f_nac" not in pac:
-            anio_nac = int(pac["fecha_nacimiento"][:4])
-        else:
-            anio_nac = pac["f_nac"][2]
-        edad = 2026 - anio_nac
+        edad, meses, dias = calcular_edad(pac["f_nac"], fecha_actual)
 
         if 0 <= edad <= 2:
             rango_0_2 += 1
@@ -1007,7 +1010,7 @@ def rep_fecha(consultas, fecha_bus):
         if cons['Fecha'] == fecha_bus:
             print(
                 f"Código: {cons['Codigo']} | Paciente: {cons['Codigo Paciente']} | "
-                f"Médico: {cons['Codigo Medico']} | Costo: ${cons['Costo']}"
+                f"Médico: {cons['Codigo Medico']} | Costo: S/{cons['Costo']}"
             )
             cont += 1
 
@@ -1024,8 +1027,8 @@ def rep_ing_med(consultas, cod_med):
             num_atenc += 1
 
     print(f"\nREPORTE FINANCIERO DEL MÉDICO: {cod_med}")
-    print(f"Total de pacientes atendidos: {num_atenc}")
-    print(f"Ingreso total generado: ${ing_med}")
+    print(f"Total de consultas realizadas: {num_atenc}")
+    print(f"Ingreso total generado: S/{ing_med}")
 
 
 # MENU PRINCIPAL Y REPORTES
@@ -1035,18 +1038,23 @@ def reg_consulta():
 
 def hist_pac_menu():
     dni = input("Ingrese DNI del paciente: ")
-    pac = None
+    encontrado = False
+    cod_pac = ""
+
     for item in pacientes:
         if item["dni"] == dni:
-            pac = item
+            encontrado = True
+            cod_pac = item["codigo"]
             break
-    if pac is None:
+
+    if encontrado == False:
         print("No existe ese paciente.")
         return
-    hist_paciente(consultas, pac["codigo"])
+
+    hist_paciente(consultas, cod_pac)
 
 
-def reportes_facade():
+def menu_reportes():
     while True:
         print("\n=== REPORTES ===")
         print("1. Listado general de pacientes")
@@ -1086,8 +1094,15 @@ def reportes_facade():
         elif opcion == "10":
             edad_rangos(pacientes)
         elif opcion == "11":
-            fecha = input("Ingrese la fecha de consulta (DD/MM/AAAA): ")
-            rep_fecha(consultas, fecha)
+            fecha_txt = input("Ingrese la fecha de consulta (DD/MM/AAAA): ")
+            fecha_bus = validar_fecha(fecha_txt)
+
+            if fecha_bus == False:
+                print("Fecha inválida. Use DD/MM/AAAA.")
+            else:
+                dia, mes, anio = fecha_bus
+                fecha = formatear_fecha(dia, mes, anio)
+                rep_fecha(consultas, fecha)
         elif opcion == "12":
             cod = input("Código del médico: ")
             rep_ing_med(consultas, cod)
@@ -1120,7 +1135,7 @@ def main():
         elif opcion == "5":
             hist_pac_menu()
         elif opcion == "6":
-            reportes_facade()
+            menu_reportes()
         elif opcion == "7":
             print("Saliendo del sistema...")
             break
