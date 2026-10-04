@@ -423,11 +423,17 @@ def reg_paciente(fecha_act):
         fecha_nac = validar_fecha(fecha_str)
 
         if fecha_nac is None:
-            print("Formato de fecha incorrecto o dia/mes no valido. Use DD/MM/AAAA (ej: 15/08/2018).")
+            print(
+                "Formato de fecha incorrecto o dia/mes no valido. "
+                "Use DD/MM/AAAA (ej: 15/08/2018)."
+            )
             continue
 
         if es_futura(fecha_nac, fecha_act):
-            print("ERROR: La fecha de nacimiento no puede ser posterior a la fecha actual del sistema.")
+            print(
+                "ERROR: La fecha de nacimiento no puede ser posterior "
+                "a la fecha actual del sistema."
+            )
             continue
 
         break
@@ -444,20 +450,26 @@ def reg_paciente(fecha_act):
     print(f"Paciente '{nom} {ape}' registrado correctamente.")
 
 
-def listar_pacientes_detalle(fecha_act):
+def listar_pac_det(fecha_act):
     print("\n--- LISTADO GENERAL DE PACIENTES ---")
     if not pacientes:
         print("No hay pacientes registrados en el sistema.")
         return
 
-    print(f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} {'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}")
+    print(
+        f"{'Codigo':<8} {'DNI':<10} {'Nombres y Apellidos':<25} "
+        f"{'F. Nac.':<12} {'Sexo':<5} {'Edad Exacta'}"
+    )
     print("---------------------------------------------------------------------------")
     for p in pacientes:
         anos, meses, dias = calcular_edad(p["f_nac"], fecha_act)
         dia_n, mes_n, anio_n = p["f_nac"]
         fecha_txt = formatear_fecha(dia_n, mes_n, anio_n)
         nom_comp = f"{p['nombres']} {p['apellidos']}"
-        print(f"{p['codigo']:<8} {p['dni']:<10} {nom_comp:<25} {fecha_txt:<12} {p['sexo']:<5} {anos}a {meses}m {dias}d")
+        print(
+            f"{p['codigo']:<8} {p['dni']:<10} {nom_comp:<25} "
+            f"{fecha_txt:<12} {p['sexo']:<5} {anos}a {meses}m {dias}d"
+        )
 
 
 def buscar_paciente(fecha_act):
@@ -535,7 +547,7 @@ def menu():
         elif op == "2":
             reg_responsable()
         elif op == "3":
-            listar_pacientes_detalle(fecha_act)
+            listar_pac_det(fecha_act)
         elif op == "4":
             buscar_paciente(fecha_act)
         elif op == "5":
@@ -846,7 +858,8 @@ def listar_pacientes(pacientes):
             dia, mes, anio = p["f_nac"]
             fecha_txt = formatear_fecha(dia, mes, anio)
         print(
-            f"Código: {p['codigo']} | DNI: {p['dni']} | Nombre: {p['nombres']} {p['apellidos']} | "
+            f"Código: {p['codigo']} | DNI: {p['dni']} | "
+            f"Nombre: {p['nombres']} {p['apellidos']} | "
             f"Nacimiento: {fecha_txt}"
         )
 
@@ -855,7 +868,8 @@ def listar_medicos(medicos):
     print("\nLISTADO GENERAL DE MÉDICOS:\n")
     for m in medicos:
         print(
-            f"Código: {m['codigo']} | CMP: {m['cmp']} | Nombre: {m['nombres']} {m['apellidos']} | "
+            f"Código: {m['codigo']} | CMP: {m['cmp']} | "
+            f"Nombre: {m['nombres']} {m['apellidos']} | "
             f"Especialidad: {m['especialidad']}"
         )
 
@@ -905,7 +919,10 @@ def consul_medico(consultas, medicos):
         for cons in consultas:
             if cons['Codigo Medico'] == cod_med:
                 cont += 1
-        print(f"Médico: {med['nombres']} {med['apellidos']} ({cod_med}) -> {cont} consultas")
+        print(
+            f"Médico: {med['nombres']} {med['apellidos']} "
+            f"({cod_med}) -> {cont} consultas"
+        )
 
 
 def ingreso_total(consultas):
@@ -947,7 +964,10 @@ def paciente_max(consultas, pacientes):
             max_cons = cont
             pac_win = f"{pac['nombres']} {pac['apellidos']} ({cod_pac})"
 
-    print(f"\nPaciente con mayor cantidad de consultas: {pac_win} con {max_cons} consultas.")
+    print(
+        f"\nPaciente con mayor cantidad de consultas: {pac_win} "
+        f"con {max_cons} consultas."
+    )
 
 
 def edad_rangos(pacientes):
@@ -1009,11 +1029,11 @@ def rep_ing_med(consultas, cod_med):
 
 
 # MENU PRINCIPAL Y REPORTES
-def reg_consulta_facade():
+def reg_consulta():
     ingresa_consulta(consultas, pacientes, medicos)
 
 
-def hist_paciente_facade():
+def hist_pac_menu():
     dni = input("Ingrese DNI del paciente: ")
     pac = None
     for item in pacientes:
@@ -1052,7 +1072,7 @@ def reportes_facade():
             cod = input("Código del médico: ")
             pacientes_medico(consultas, pacientes, cod)
         elif opcion == "4":
-            hist_paciente_facade()
+            hist_pac_menu()
         elif opcion == "5":
             total_consultas(consultas)
         elif opcion == "6":
@@ -1096,9 +1116,9 @@ def main():
         elif opcion == "3":
             menu_medicos()
         elif opcion == "4":
-            reg_consulta_facade()
+            reg_consulta()
         elif opcion == "5":
-            hist_paciente_facade()
+            hist_pac_menu()
         elif opcion == "6":
             reportes_facade()
         elif opcion == "7":
