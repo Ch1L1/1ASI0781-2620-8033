@@ -355,7 +355,7 @@ def reg_responsable():
             break
         print("ERROR: El telefono debe tener 9 digitos, ser numerico y comenzar con 9.")
 
-    par = input("Parentesco (Padre, Madre, Tutor, etc.): ").capitalize()
+    par = input("Parentesco (Padre, Madre, Tutor, etc.): ")
 
     responsables.append({
         "codigo": cod,
@@ -478,11 +478,11 @@ def buscar_paciente(fecha_act):
         print("No hay pacientes registrados.")
         return
 
-    busq = input("Ingrese DNI, Nombre o Apellido a buscar: ").lower()
+    busq = input("Ingrese DNI, Nombre o Apellido a buscar: ")
     hallados = []
 
     for p in pacientes:
-        nom_comp = f"{p['nombres']} {p['apellidos']}".lower()
+        nom_comp = f"{p['nombres']} {p['apellidos']}"
         if busq in p["dni"] or busq in nom_comp:
             hallados.append(p)
 
